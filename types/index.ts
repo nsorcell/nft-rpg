@@ -52,6 +52,8 @@ export type { TokenInfo } from "./@superfluid-finance/ethereum-contracts/contrac
 export { TokenInfo__factory } from "./factories/@superfluid-finance/ethereum-contracts/contracts/interfaces/tokens/TokenInfo__factory";
 export type { UUPSProxy } from "./@superfluid-finance/ethereum-contracts/contracts/upgradability/UUPSProxy";
 export { UUPSProxy__factory } from "./factories/@superfluid-finance/ethereum-contracts/contracts/upgradability/UUPSProxy__factory";
+export type { ERC721Linked } from "./contracts/ERC721Linked";
+export { ERC721Linked__factory } from "./factories/contracts/ERC721Linked__factory";
 export type { IManaReserve } from "./contracts/interfaces/IManaReserve";
 export { IManaReserve__factory } from "./factories/contracts/interfaces/IManaReserve__factory";
 export type { IPlayer } from "./contracts/interfaces/IPlayer";

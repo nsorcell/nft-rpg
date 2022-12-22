@@ -12,7 +12,6 @@ contract Player is IPlayer, ERC721 {
     World private immutable i_world;
     Counters.Counter private _tokenIdCounter;
 
-    uint256 private s_tokenId = 0;
     mapping(uint256 => Stats) s_stats;
 
     constructor(address world) ERC721("Player", "PLAYER") {

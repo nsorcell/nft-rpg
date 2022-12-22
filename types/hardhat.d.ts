@@ -101,6 +101,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.UUPSProxy__factory>;
     getContractFactory(
+      name: "ERC721Linked",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC721Linked__factory>;
+    getContractFactory(
       name: "IManaReserve",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IManaReserve__factory>;
@@ -243,6 +247,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.UUPSProxy>;
+    getContractAt(
+      name: "ERC721Linked",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC721Linked>;
     getContractAt(
       name: "IManaReserve",
       address: string,

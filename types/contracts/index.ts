@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type * as interfaces from "./interfaces";
 export type { interfaces };
+export type { ERC721Linked } from "./ERC721Linked";
 export type { MANAx } from "./MANAx";
 export type { ManaReserve } from "./ManaReserve";
 export type { Player } from "./Player";

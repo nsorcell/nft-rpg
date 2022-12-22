@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as interfaces from "./interfaces";
+export { ERC721Linked__factory } from "./ERC721Linked__factory";
 export { MANAx__factory } from "./MANAx__factory";
 export { ManaReserve__factory } from "./ManaReserve__factory";
 export { Player__factory } from "./Player__factory";
