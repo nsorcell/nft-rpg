@@ -3,7 +3,13 @@
 /* eslint-disable */
 import type * as interfaces from "./interfaces";
 export type { interfaces };
+import type * as libraries from "./libraries";
+export type { libraries };
+import type * as tokens from "./tokens";
+export type { tokens };
 export type { ERC721Linked } from "./ERC721Linked";
+export type { Guild } from "./Guild";
+export type { GuildRegistry } from "./GuildRegistry";
 export type { MANAx } from "./MANAx";
 export type { ManaReserve } from "./ManaReserve";
 export type { Player } from "./Player";

@@ -2,8 +2,8 @@
 pragma solidity ^0.8.16;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import {World} from "./World.sol";
-import {IPlayer} from "./interfaces/IPlayer.sol";
+import {World} from "../World.sol";
+import {IPlayer} from "../interfaces/tokens/IPlayer.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Player is IPlayer, ERC721 {

@@ -2,7 +2,11 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as interfaces from "./interfaces";
+export * as libraries from "./libraries";
+export * as tokens from "./tokens";
 export { ERC721Linked__factory } from "./ERC721Linked__factory";
+export { Guild__factory } from "./Guild__factory";
+export { GuildRegistry__factory } from "./GuildRegistry__factory";
 export { MANAx__factory } from "./MANAx__factory";
 export { ManaReserve__factory } from "./ManaReserve__factory";
 export { Player__factory } from "./Player__factory";

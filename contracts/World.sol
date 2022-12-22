@@ -4,8 +4,9 @@ pragma solidity ^0.8.16;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ISuperToken} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
 import {ManaReserve} from "./ManaReserve.sol";
-import {Player} from "./Player.sol";
+import {Player} from "./tokens/Player.sol";
 import {IWorld} from "./interfaces/IWorld.sol";
+import {GuildRegistry} from "./GuildRegistry.sol";
 
 contract World is IWorld, Ownable {
     bool private s_initialized = false;
@@ -13,6 +14,7 @@ contract World is IWorld, Ownable {
     Player private s_player;
     ISuperToken private s_manaX;
     ManaReserve private s_manaReserve;
+    GuildRegistry private s_guildRegistry;
 
     modifier ready() {
         if (!s_initialized) {
@@ -33,11 +35,13 @@ contract World is IWorld, Ownable {
     function initialize(
         Player player,
         ISuperToken mana,
-        ManaReserve manaReserve
+        ManaReserve manaReserve,
+        GuildRegistry guildRegistry
     ) external onlyOwner {
         s_player = player;
         s_manaX = mana;
         s_manaReserve = manaReserve;
+        s_guildRegistry = guildRegistry;
 
         manaReserve.connectWorld(mana);
 

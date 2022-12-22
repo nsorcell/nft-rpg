@@ -13,6 +13,58 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
+      name: "OwnableUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.OwnableUpgradeable__factory>;
+    getContractFactory(
+      name: "IERC1822ProxiableUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC1822ProxiableUpgradeable__factory>;
+    getContractFactory(
+      name: "IBeaconUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IBeaconUpgradeable__factory>;
+    getContractFactory(
+      name: "ERC1967UpgradeUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC1967UpgradeUpgradeable__factory>;
+    getContractFactory(
+      name: "Initializable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Initializable__factory>;
+    getContractFactory(
+      name: "UUPSUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.UUPSUpgradeable__factory>;
+    getContractFactory(
+      name: "ERC20Upgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC20Upgradeable__factory>;
+    getContractFactory(
+      name: "ERC20BurnableUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC20BurnableUpgradeable__factory>;
+    getContractFactory(
+      name: "IERC20MetadataUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC20MetadataUpgradeable__factory>;
+    getContractFactory(
+      name: "IERC20Upgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC20Upgradeable__factory>;
+    getContractFactory(
+      name: "ContextUpgradeable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ContextUpgradeable__factory>;
+    getContractFactory(
+      name: "AccessControl",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AccessControl__factory>;
+    getContractFactory(
+      name: "IAccessControl",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IAccessControl__factory>;
+    getContractFactory(
       name: "Ownable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Ownable__factory>;
@@ -105,6 +157,22 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC721Linked__factory>;
     getContractFactory(
+      name: "Guild",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Guild__factory>;
+    getContractFactory(
+      name: "GuildRegistry",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.GuildRegistry__factory>;
+    getContractFactory(
+      name: "IGuild",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IGuild__factory>;
+    getContractFactory(
+      name: "IGuildRegistry",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IGuildRegistry__factory>;
+    getContractFactory(
       name: "IManaReserve",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IManaReserve__factory>;
@@ -116,6 +184,22 @@ declare module "hardhat/types/runtime" {
       name: "IWorld",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IWorld__factory>;
+    getContractFactory(
+      name: "IPlayer",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IPlayer__factory>;
+    getContractFactory(
+      name: "AddressArrayUtils",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AddressArrayUtils__factory>;
+    getContractFactory(
+      name: "StringArrayUtils",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.StringArrayUtils__factory>;
+    getContractFactory(
+      name: "UintArrayUtils",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.UintArrayUtils__factory>;
     getContractFactory(
       name: "ManaReserve",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -133,10 +217,95 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SuperTokenBase__factory>;
     getContractFactory(
+      name: "Currency",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Currency__factory>;
+    getContractFactory(
+      name: "ERC721Linked",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC721Linked__factory>;
+    getContractFactory(
+      name: "MANAx",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MANAx__factory>;
+    getContractFactory(
+      name: "Player",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Player__factory>;
+    getContractFactory(
+      name: "SuperTokenBase",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SuperTokenBase__factory>;
+    getContractFactory(
       name: "World",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.World__factory>;
 
+    getContractAt(
+      name: "OwnableUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.OwnableUpgradeable>;
+    getContractAt(
+      name: "IERC1822ProxiableUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC1822ProxiableUpgradeable>;
+    getContractAt(
+      name: "IBeaconUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IBeaconUpgradeable>;
+    getContractAt(
+      name: "ERC1967UpgradeUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC1967UpgradeUpgradeable>;
+    getContractAt(
+      name: "Initializable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Initializable>;
+    getContractAt(
+      name: "UUPSUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.UUPSUpgradeable>;
+    getContractAt(
+      name: "ERC20Upgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC20Upgradeable>;
+    getContractAt(
+      name: "ERC20BurnableUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC20BurnableUpgradeable>;
+    getContractAt(
+      name: "IERC20MetadataUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC20MetadataUpgradeable>;
+    getContractAt(
+      name: "IERC20Upgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC20Upgradeable>;
+    getContractAt(
+      name: "ContextUpgradeable",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ContextUpgradeable>;
+    getContractAt(
+      name: "AccessControl",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.AccessControl>;
+    getContractAt(
+      name: "IAccessControl",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IAccessControl>;
     getContractAt(
       name: "Ownable",
       address: string,
@@ -253,6 +422,26 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ERC721Linked>;
     getContractAt(
+      name: "Guild",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Guild>;
+    getContractAt(
+      name: "GuildRegistry",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.GuildRegistry>;
+    getContractAt(
+      name: "IGuild",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IGuild>;
+    getContractAt(
+      name: "IGuildRegistry",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IGuildRegistry>;
+    getContractAt(
       name: "IManaReserve",
       address: string,
       signer?: ethers.Signer
@@ -268,10 +457,55 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IWorld>;
     getContractAt(
+      name: "IPlayer",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IPlayer>;
+    getContractAt(
+      name: "AddressArrayUtils",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.AddressArrayUtils>;
+    getContractAt(
+      name: "StringArrayUtils",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.StringArrayUtils>;
+    getContractAt(
+      name: "UintArrayUtils",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.UintArrayUtils>;
+    getContractAt(
       name: "ManaReserve",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.ManaReserve>;
+    getContractAt(
+      name: "MANAx",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.MANAx>;
+    getContractAt(
+      name: "Player",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Player>;
+    getContractAt(
+      name: "SuperTokenBase",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SuperTokenBase>;
+    getContractAt(
+      name: "Currency",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Currency>;
+    getContractAt(
+      name: "ERC721Linked",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC721Linked>;
     getContractAt(
       name: "MANAx",
       address: string,

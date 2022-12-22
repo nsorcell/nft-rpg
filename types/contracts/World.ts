@@ -28,7 +28,7 @@ import type {
 
 export interface WorldInterface extends utils.Interface {
   functions: {
-    "initialize(address,address,address)": FunctionFragment;
+    "initialize(address,address,address,address)": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
@@ -45,6 +45,7 @@ export interface WorldInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "initialize",
     values: [
+      PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>
@@ -121,6 +122,7 @@ export interface World extends BaseContract {
       player: PromiseOrValue<string>,
       mana: PromiseOrValue<string>,
       manaReserve: PromiseOrValue<string>,
+      guildRegistry: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -140,6 +142,7 @@ export interface World extends BaseContract {
     player: PromiseOrValue<string>,
     mana: PromiseOrValue<string>,
     manaReserve: PromiseOrValue<string>,
+    guildRegistry: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -159,6 +162,7 @@ export interface World extends BaseContract {
       player: PromiseOrValue<string>,
       mana: PromiseOrValue<string>,
       manaReserve: PromiseOrValue<string>,
+      guildRegistry: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -188,6 +192,7 @@ export interface World extends BaseContract {
       player: PromiseOrValue<string>,
       mana: PromiseOrValue<string>,
       manaReserve: PromiseOrValue<string>,
+      guildRegistry: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -208,6 +213,7 @@ export interface World extends BaseContract {
       player: PromiseOrValue<string>,
       mana: PromiseOrValue<string>,
       manaReserve: PromiseOrValue<string>,
+      guildRegistry: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
