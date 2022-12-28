@@ -42,34 +42,38 @@ contract Guild is IGuild, AccessControl {
 
         s_memberList.push(s_leader);
 
-        s_guildRegistry.register(address(this));
+        s_guildRegistry.register();
     }
 
-    function requestJoin(address candidate) public {
+    function requestJoin(address candidate) external {
         s_recruitmentRequests.push(candidate);
+
+        emit Guild_JoinRequested(candidate);
     }
 
-    function denyRequest(address candidate) public {
+    function denyRequest(address candidate) external {
         if (!hasRole(LEADER, msg.sender) || !hasRole(OFFICER, msg.sender)) {
-            revert Unauthorized();
+            revert IGuild_Unauthorized();
         }
 
         (bool found, uint256 index) = s_recruitmentRequests.indexOf(candidate);
 
         if (found) {
             s_recruitmentRequests.remove(index);
+
+            emit Guild_JoinDenied(candidate);
         } else {
-            revert CandidateNotFound();
+            revert IGuild_CandidateNotFound();
         }
     }
 
-    function recruit(address candidate) public {
+    function recruit(address candidate) external {
         if (!hasRole(LEADER, msg.sender) || !hasRole(OFFICER, msg.sender)) {
-            revert Unauthorized();
+            revert IGuild_Unauthorized();
         }
 
         if (!s_recruitmentRequests.contains(candidate)) {
-            revert CandidateNotFound();
+            revert IGuild_CandidateNotFound();
         }
 
         (bool member, address guild) = s_guildRegistry.isMemberOfAnyGuild(
@@ -77,7 +81,7 @@ contract Guild is IGuild, AccessControl {
         );
 
         if (member) {
-            revert AlreadyMemberOfAnotherGuild(guild);
+            revert IGuild_AlreadyMemberOfAnotherGuild(guild);
         }
 
         (bool found, uint256 index) = s_recruitmentRequests.indexOf(candidate);
@@ -88,13 +92,14 @@ contract Guild is IGuild, AccessControl {
 
         _setupRole(MEMBER, candidate);
         s_memberList.push(candidate);
-
         s_guildRegistry.registerMember(candidate);
+
+        emit Guild_JoinAccepted(candidate);
     }
 
-    function expulse(address member) public onlyRole(LEADER) {
+    function expel(address member) external onlyRole(LEADER) {
         if (member == s_leader) {
-            revert CannotExpulseLeader();
+            revert IGuild_CannotExpelLeader();
         }
 
         (bool found, uint256 index) = s_memberList.indexOf(member);
@@ -106,63 +111,54 @@ contract Guild is IGuild, AccessControl {
             _revokeRole(currentRole, member);
 
             s_guildRegistry.unregisterMember(member);
+
+            emit Guild_MemberExpelled(member);
         } else {
-            revert NotAMember();
+            revert IGuild_NotAMember();
         }
     }
 
-    function promoteTo(Role role, address member) public onlyRole(LEADER) {
+    function assignRole(Role role, address member) external onlyRole(LEADER) {
         if (member == s_leader) {
-            revert CannotPromoteLeader();
+            revert IGuild_CannotChangeLeaderRole();
         }
 
         bytes32 currentRoleName = getRole(member);
         bytes32 targetRoleName = s_roles[uint256(role)];
 
         if (currentRoleName == targetRoleName) {
-            revert AlreadyInRole();
+            revert IGuild_AlreadyInRole();
         }
 
         _revokeRole(currentRoleName, member);
         _setupRole(targetRoleName, member);
+
+        emit Guild_RoleAssigned(member, role);
     }
 
-    function demote(address member) public onlyRole(LEADER) {
-        if (member == s_leader) {
-            revert CannotDemoteLeader();
-        }
+    function transferLeadership(address newLeader) external onlyRole(LEADER) {
+        (bool found, uint256 index) = s_memberList.indexOf(s_leader);
 
-        bytes32 currentRole = getRole(member);
-
-        if (currentRole == MEMBER) {
-            revert CannotDemoteMember();
-        }
-
-        bytes32 targetRole = s_roles[uint256(currentRole) - 1];
-
-        _revokeRole(currentRole, member);
-        _setupRole(targetRole, member);
-    }
-
-    function transferLeadership(address newLeader) public onlyRole(LEADER) {
-        if (!s_memberList.contains(newLeader)) {
-            revert NewLeaderMustBeDifferent();
+        if (!found) {
+            revert IGuild_NewLeaderMustBeInGuild();
         }
 
         if (newLeader != s_leader) {
-            revert NewLeaderMustBeInGuild();
+            revert IGuild_NewLeaderMustBeDifferent();
         }
 
-        s_leader = newLeader;
-
-        (, uint256 index) = s_memberList.indexOf(s_leader);
         s_memberList.remove(index);
+
+        address oldLeader = s_leader;
+        s_leader = newLeader;
 
         _setupRole(LEADER, s_leader);
         _revokeRole(LEADER, msg.sender);
+
+        emit Guild_LeadershipTransferred(oldLeader, newLeader);
     }
 
-    function disband() public onlyRole(LEADER) {
+    function disband() external onlyRole(LEADER) {
         for (uint256 i = 0; i < s_memberList.length; i++) {
             address member = s_memberList[i];
             bytes32 currentRole = getRole(member);
@@ -172,20 +168,39 @@ contract Guild is IGuild, AccessControl {
 
         s_memberList = new address[](0);
         s_guildRegistry.unregister();
+
+        emit Guild_Disbanded();
+
         selfdestruct(payable(s_leader));
     }
 
-    function isMember(address account) public view returns (bool) {
+    function isMember(address account) external view returns (bool) {
         return s_memberList.contains(account);
     }
 
-    function isLeader(address user) public view returns (bool) {
+    function isLeader(address user) external view returns (bool) {
         return user == s_leader;
+    }
+
+    function getName() external view returns (string memory) {
+        return s_name;
+    }
+
+    function getLeader() external view returns (address) {
+        return s_leader;
+    }
+
+    function getMembers() external view returns (address[] memory) {
+        return s_memberList;
+    }
+
+    function getRecruitmentRequests() external view returns (address[] memory) {
+        return s_recruitmentRequests;
     }
 
     function getRole(address user) public view returns (bytes32) {
         unchecked {
-            for (uint256 i = 0; i < 4; ) {
+            for (uint256 i = 0; i < uint256(Role.LEADER) + 1; i++) {
                 if (hasRole(s_roles[i], user)) {
                     return s_roles[i];
                 }

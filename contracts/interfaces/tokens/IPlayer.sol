@@ -1,19 +1,17 @@
 // SPDX-License-Identifier: AGPLv3
 pragma solidity ^0.8.16;
+import {StatsLibrary} from "../../libraries/Stats.sol";
+import {ClassLibrary} from "../../libraries/Class.sol";
 
 interface IPlayer {
     error MultiplePlayersNotAllowed();
+    error InvalidAttributePoints();
+    error CannotLevelUp(uint256 missingXp);
 
-    struct Stats {
+    struct Attributes {
         uint256 level;
-        uint256 maxHealth;
-        uint256 health;
-        int96 healthRegen;
-        uint256 maxMana;
-        uint256 mana;
-        int96 manaRegen;
-        uint256 maxStamina;
-        uint256 stamina;
-        int96 staminaRegen;
+        uint256 experience;
+        ClassLibrary.PrimaryClass primaryClass;
+        ClassLibrary.SecondaryClass secondaryClass;
     }
 }

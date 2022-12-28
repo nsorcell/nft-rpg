@@ -12,21 +12,30 @@ contract GuildRegistry is IGuildRegistry, Ownable {
     address[] public s_guilds;
     mapping(address => address) public s_members;
 
+    uint256 private s_reputation = 0;
+
     modifier onlyGuilds() {
         if (!s_guilds.contains(msg.sender)) {
-            revert OnlyAllowedForGuilds();
+            revert IGuildRegistry_OnlyAllowedForGuilds();
         }
         _;
     }
 
     constructor() Ownable() {}
 
-    function register(address guild) public {
-        if (s_foundingRequests.contains(guild)) {
-            revert GuildAlreadyExists();
+    function register() public onlyGuilds {
+        if (s_foundingRequests.contains(msg.sender)) {
+            revert IGuildRegistry_GuildAlreadyExists();
         }
 
-        s_foundingRequests.push(guild);
+        s_foundingRequests.push(msg.sender);
+        address leader = Guild(msg.sender).getLeader();
+
+        emit GuildRegistry_GuildEvent(
+            leader,
+            msg.sender,
+            GuildEventType.REGISTER_REQUEST_RECEIVED
+        );
     }
 
     function unregister() public onlyGuilds {
@@ -35,11 +44,19 @@ contract GuildRegistry is IGuildRegistry, Ownable {
         if (found) {
             s_guilds.remove(index);
         }
+
+        address leader = Guild(msg.sender).getLeader();
+
+        emit GuildRegistry_GuildEvent(
+            leader,
+            msg.sender,
+            GuildEventType.UNREGISTER_REQUEST_RECEIVED
+        );
     }
 
     function accept(address guild) public onlyOwner {
         if (s_guilds.contains(guild)) {
-            revert GuildAlreadyRegistered();
+            revert IGuildRegistry_GuildAlreadyRegistered();
         }
 
         (bool found, uint256 index) = s_foundingRequests.indexOf(guild);
@@ -49,24 +66,43 @@ contract GuildRegistry is IGuildRegistry, Ownable {
         }
 
         s_guilds.push(guild);
+        address leader = Guild(guild).getLeader();
+
+        emit GuildRegistry_GuildEvent(
+            leader,
+            guild,
+            GuildEventType.REGISTER_REQUEST_ACCEPTED
+        );
     }
 
     function registerMember(address candidate) public onlyGuilds {
         (bool member, address guild) = isMemberOfAnyGuild(candidate);
 
         if (member) {
-            revert AlreadyMember(guild);
+            revert IGuildRegistry_AlreadyMemberOfAnotherGuild(guild);
         }
 
         if (Guild(msg.sender).isMember(candidate)) {
             s_members[candidate] = msg.sender;
         }
+
+        emit GuildRegistry_GuildEvent(
+            candidate,
+            msg.sender,
+            GuildEventType.REGISTER_MEMBER
+        );
     }
 
     function unregisterMember(address member) public onlyGuilds {
         if (s_members[member] == msg.sender) {
             s_members[member] = address(0);
         }
+
+        emit GuildRegistry_GuildEvent(
+            member,
+            msg.sender,
+            GuildEventType.UNREGISTER_MEMBER
+        );
     }
 
     function isMemberOfAnyGuild(

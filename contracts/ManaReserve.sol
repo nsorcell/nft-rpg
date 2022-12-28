@@ -11,7 +11,7 @@ contract ManaReserve is IManaReserve, Ownable {
     using SuperTokenV1Library for ISuperToken;
 
     bool private isConnected = false;
-    int96 private constant INITIAL_FLOWRATE = 100;
+    int96 private constant INITIAL_FLOWRATE = 1;
 
     ISuperToken private MANAx;
 

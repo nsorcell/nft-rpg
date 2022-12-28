@@ -23,12 +23,12 @@ library AddressArrayUtils {
     }
 
     function indexOf(
-        address[] memory arr,
+        address[] memory array,
         address addr
     ) public pure returns (bool, uint256) {
         unchecked {
-            for (uint256 i = 0; i < arr.length; ) {
-                if (arr[i++] == addr) {
+            for (uint256 i = 0; i < array.length; ) {
+                if (array[i++] == addr) {
                     return (true, i);
                 }
             }
@@ -62,6 +62,17 @@ library UintArrayUtils {
             }
 
             return false;
+        }
+    }
+
+    function sum(uint256[] memory array) public pure returns (uint256) {
+        unchecked {
+            uint256 result = 0;
+            for (uint256 i = 0; i < array.length; i++) {
+                result += array[i];
+            }
+
+            return result;
         }
     }
 }
