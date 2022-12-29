@@ -11,6 +11,9 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer } = await getNamedAccounts();
 
   const world = await deployments.get("World");
+  const lClass = await deployments.get("ClassLibrary");
+  const lStats = await deployments.get("StatsLibrary");
+  const lArray = await deployments.get("UintArrayUtils");
 
   const args: any[] = [world.address];
 
@@ -21,6 +24,11 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     args,
     log: true,
     waitConfirmations: developmentChains.includes(network.name) ? 1 : 5,
+    libraries: {
+      StatsLibrary: lStats.address,
+      ClassLibrary: lClass.address,
+      UintArrayUtils: lArray.address,
+    },
   });
 
   log(`${CONTRACT} deployed at ${player.address}`);

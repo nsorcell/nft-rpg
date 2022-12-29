@@ -27,24 +27,5 @@ describe("GuildRegistry", () => {
     );
   });
 
-  describe.only("emitEvent", () => {
-    it("should emit a dynamic event based on the parameters", async () => {
-      const sig = "event Guild_Registry_JoinRequestAccepted(address, address)";
-
-      const txn = await registry.emitEvent(
-        sig,
-        accounts[0].address,
-        accounts[1].address
-      );
-
-      const abi = [
-        "event Guild_Registry_JoinRequestAccepted(address, address)",
-      ];
-      let iface = new ethers.utils.Interface(abi);
-
-      const txnResponse = await txn.wait();
-
-      console.log(iface.parseLog(txnResponse.logs[0]));
-    });
-  });
+  describe("", () => {});
 });

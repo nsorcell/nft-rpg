@@ -7,11 +7,4 @@ interface IPlayer {
     error MultiplePlayersNotAllowed();
     error InvalidAttributePoints();
     error CannotLevelUp(uint256 missingXp);
-
-    struct Attributes {
-        uint256 level;
-        uint256 experience;
-        ClassLibrary.PrimaryClass primaryClass;
-        ClassLibrary.SecondaryClass secondaryClass;
-    }
 }

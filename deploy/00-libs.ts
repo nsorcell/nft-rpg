@@ -29,6 +29,25 @@ const deploy: DeployFunction = async ({ getNamedAccounts, deployments }) => {
     log: true,
     args: [],
   });
+
+  log("Deploying Class...");
+
+  const classes = await deploy("ClassLibrary", {
+    from: deployer,
+    log: true,
+    args: [],
+  });
+
+  log("Deploying Stats...");
+
+  const stats = await deploy("StatsLibrary", {
+    from: deployer,
+    log: true,
+    args: [],
+    libraries: {
+      ClassLibrary: classes.address,
+    },
+  });
 };
 
 deploy.tags = ["all", "libs"];
