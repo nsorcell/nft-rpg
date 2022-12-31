@@ -1,6 +1,7 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import "@nomiclabs/hardhat-ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import fs from "fs";
 import { deployments, ethers } from "hardhat";
 import {
   Player,
@@ -34,10 +35,17 @@ const getClassStatsWithDistribution = (
     luck: 6,
   };
 
-  const stats = {
+  const points = level * 3;
+
+  const _stats = {
     ...initialStats,
-    [primaryStat]: initialStats[primaryStat] + level * 2,
-    [secondaryStat]: initialStats[secondaryStat] + level * 1,
+    [primaryStat]: initialStats[primaryStat] + Math.ceil(points / 2),
+    [secondaryStat]: initialStats[secondaryStat] + Math.floor(points / 3),
+  };
+
+  const stats = {
+    ..._stats,
+    constitution: _stats["constitution"] + Math.floor(points / 6),
   };
 
   const attributes: AttributesInput = {
@@ -51,6 +59,77 @@ const getClassStatsWithDistribution = (
 
   return { stats, attributes };
 };
+
+const generateStatsFor = async (statsLib: StatsLibrary, level: number) =>
+  (
+    await Promise.all(
+      classCombinations.map(
+        async (
+          [primaryClass, secondaryClass, primaryStat, secondaryStat],
+          i
+        ) => {
+          const { stats, attributes } = getClassStatsWithDistribution(
+            level,
+            primaryClass,
+            secondaryClass,
+            primaryStat,
+            secondaryStat
+          );
+
+          const health = await statsLib.calculateHealth(
+            createStatsArray(stats)
+          );
+
+          const pAtk = await statsLib.calculatePhysicalDamage(
+            createStatsArray(stats),
+            createAttributesArray(attributes)
+          );
+
+          const mAtk = await statsLib.calculateMagicDamage(
+            createStatsArray(stats),
+            createAttributesArray(attributes)
+          );
+
+          const pDef = await statsLib.calculatePhysicalDefense(
+            createStatsArray(stats)
+          );
+
+          const mDef = await statsLib.calculateMagicDefense(
+            createStatsArray(stats)
+          );
+
+          const pCritP = await statsLib.calculatePhysicalCritChance(
+            createStatsArray(stats),
+            createAttributesArray(attributes)
+          );
+
+          const mCritP = await statsLib.calculateMagicCritChance(
+            createStatsArray(stats),
+            createAttributesArray(attributes)
+          );
+
+          return {
+            className: SecondaryClass[secondaryClass],
+            health: health.toString(),
+            pAtk: pAtk.toString(),
+            mAtk: mAtk.toString(),
+            pDef: pDef.toString(),
+            mDef: mDef.toString(),
+            pCritP: pCritP.toString(),
+            mCritP: mCritP.toString(),
+            stats,
+          };
+        }
+      )
+    )
+  ).reduce((acc, { className, ...rest }) => {
+    return {
+      ...acc,
+      [className]: {
+        ...rest,
+      },
+    };
+  }, {});
 
 describe("StatsLibrary", () => {
   let provider: JsonRpcProvider,
@@ -79,63 +158,17 @@ describe("StatsLibrary", () => {
 
   describe.only("calculatePhysicalDamage", () => {
     it("should return the calculated physical damage", async () => {
-      const result = await Promise.all(
-        classCombinations.map(
-          async (
-            [primaryClass, secondaryClass, primaryStat, secondaryStat],
-            i
-          ) => {
-            const { stats, attributes } = getClassStatsWithDistribution(
-              10,
-              primaryClass,
-              secondaryClass,
-              primaryStat,
-              secondaryStat
-            );
+      const lvl1 = await generateStatsFor(statsLib, 1);
+      const lvl5 = await generateStatsFor(statsLib, 5);
+      const lvl10 = await generateStatsFor(statsLib, 10);
+      const lvl15 = await generateStatsFor(statsLib, 15);
+      const lvl20 = await generateStatsFor(statsLib, 20);
 
-            const pAtk = await statsLib.calculatePhysicalDamage(
-              createStatsArray(stats),
-              createAttributesArray(attributes)
-            );
-
-            const mAtk = await statsLib.calculateMagicDamage(
-              createStatsArray(stats),
-              createAttributesArray(attributes)
-            );
-
-            const pDef = await statsLib.calculatePhysicalDefense(
-              createStatsArray(stats),
-              createAttributesArray(attributes)
-            );
-
-            const mDef = await statsLib.cal(
-              createStatsArray(stats),
-              createAttributesArray(attributes)
-            );
-
-            return {
-              className: SecondaryClass[secondaryClass],
-              pAtk,
-              mAtk,
-              pDef,
-              stats,
-            };
-          }
-        )
-      );
-      console.log(
-        result.reduce((acc, { className, pAtk, mAtk, pDef, stats }) => {
-          return {
-            ...acc,
-            [className]: {
-              pAtk,
-              mAtk,
-              pDef,
-              stats,
-            },
-          };
-        }, {})
-      );
+      fs.writeFileSync(`lvl1.json`, JSON.stringify(lvl1));
+      fs.writeFileSync(`lvl5.json`, JSON.stringify(lvl5));
+      fs.writeFileSync(`lvl10.json`, JSON.stringify(lvl10));
+      fs.writeFileSync(`lvl15.json`, JSON.stringify(lvl15));
+      fs.writeFileSync(`lvl20.json`, JSON.stringify(lvl20));
     });
   });
 });

@@ -49,7 +49,12 @@ export const classCombinations: [
   [PrimaryClass.Warrior, SecondaryClass.Duelist, "strength", "constitution"],
   [PrimaryClass.Warrior, SecondaryClass.Harlequin, "strength", "luck"],
   [PrimaryClass.Mage, SecondaryClass.Arcanist, "intelligence", "wit"],
-  [PrimaryClass.Mage, SecondaryClass.Battlemage, "intelligence", "strength"],
+  [
+    PrimaryClass.Mage,
+    SecondaryClass.Battlemage,
+    "intelligence",
+    "constitution",
+  ],
   [PrimaryClass.Mage, SecondaryClass.Dreamweaver, "intelligence", "luck"],
   [PrimaryClass.Rogue, SecondaryClass.Stalker, "dexterity", "strength"],
   [PrimaryClass.Rogue, SecondaryClass.Trickster, "dexterity", "wit"],
