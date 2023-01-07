@@ -78,7 +78,7 @@ contract Player is IPlayer, ERC721 {
         i_world.mintCurrency{value: msg.value}();
 
         _tokenIdCounter.increment();
-        emit PlayerCreated(tokenId);
+        emit Player_PlayerCreated(tokenId);
     }
 
     function firstClassTransfer(
@@ -96,6 +96,7 @@ contract Player is IPlayer, ERC721 {
         }
 
         s_attributes[player].primaryClass = selected;
+        emit Player_FirstClassTransfer(player, uint256(selected));
     }
 
     function secondClassTransfer(
@@ -121,10 +122,13 @@ contract Player is IPlayer, ERC721 {
         }
 
         s_attributes[player].secondaryClass = selected;
+        emit Player_SecondClassTransfer(player, uint256(selected));
     }
 
     function awardXP(uint256 player, uint256 amount) public {
         s_attributes[player].experience += amount;
+
+        emit Player_XPReceived(player, amount);
     }
 
     function levelUp(
@@ -157,6 +161,8 @@ contract Player is IPlayer, ERC721 {
         s_stats[player] = stats;
         s_attributes[player].level++;
         s_attributes[player].experience = remainingXp;
+
+        emit Player_LevelUp(player);
     }
 
     function getStats(

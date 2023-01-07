@@ -4,7 +4,17 @@ import {StatsLibrary} from "../../libraries/Stats.sol";
 import {ClassLibrary} from "../../libraries/Class.sol";
 
 interface IPlayer {
+    event Player_PlayerCreated(uint256 indexed playerId);
+    event Player_LevelUp(uint256 indexed playerId);
+    event Player_FirstClassTransfer(
+        uint256 indexed playerId,
+        uint256 indexed class
+    );
 
+    event Player_SecondClassTransfer(
+        uint256 indexed playerId,
+        uint256 indexed class
+    );
 
-    event PlayerCreated(uint256 playerId);
+    event Player_XPReceived(uint256 indexed playerId, uint256 amount);
 }
