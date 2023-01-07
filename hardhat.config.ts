@@ -1,5 +1,7 @@
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
+import "hardhat-gui";
+
 import { HardhatUserConfig } from "hardhat/config";
 
 import dotenv from "dotenv";
@@ -23,13 +25,14 @@ const config: HardhatUserConfig = {
   networks: {
     localhost: {
       url: "http://127.0.0.1:8545",
-      
+      allowUnlimitedContractSize: true,
     },
     hardhat: {
       chainId: 5,
       forking: {
         url: `${GOERLI_RPC_URL}`,
       },
+      allowUnlimitedContractSize: true,
     },
     mumbai: {
       url: MUMBAI_RPC_URL,

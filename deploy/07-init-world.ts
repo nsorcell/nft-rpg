@@ -13,7 +13,7 @@ const init = async (hre: HardhatRuntimeEnvironment) => {
   const player = await deployments.get("Player");
   const manaReserve = await deployments.get("ManaReserve");
   const mana = await deployments.get("MANAx");
-  const guildRegistry = await deployments.get("GuildRegistry");
+  const currency = await deployments.get("Currency");
 
   log(`Initializing World...`);
 
@@ -22,7 +22,7 @@ const init = async (hre: HardhatRuntimeEnvironment) => {
     player.address,
     mana.address,
     manaReserve.address,
-    guildRegistry.address
+    currency.address
   );
 
   log(`World initialized.`);

@@ -156,7 +156,7 @@ describe("StatsLibrary", () => {
     player = Player__factory.connect(playerDeployment.address, accounts[0]);
   });
 
-  describe.only("calculatePhysicalDamage", () => {
+  describe("calculatePhysicalDamage", () => {
     it("should return the calculated physical damage", async () => {
       const lvl100 = await generateStatsFor(statsLib, 100);
 

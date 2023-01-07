@@ -9,10 +9,11 @@ import {ClassLibrary} from "../libraries/Class.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import {UintArrayUtils} from "../libraries/ArrayUtils.sol";
+import "../libraries/Errors.sol";
 
 contract Player is IPlayer, ERC721 {
     using Counters for Counters.Counter;
-    using UintArrayUtils for uint256[];
+    using UintArrayUtils for uint256[6];
     using UintArrayUtils for uint256[3];
 
     using SafeMath for uint256;
@@ -25,16 +26,31 @@ contract Player is IPlayer, ERC721 {
     World private immutable i_world;
     Counters.Counter private _tokenIdCounter;
 
+    uint256 private i_price;
+
     mapping(uint256 => uint256[6]) s_stats;
     mapping(uint256 => StatsLibrary.Attributes) s_attributes;
+    mapping(address => uint256) s_tokenOwners;
 
-    constructor(address world) ERC721("Player", "PLAYER") {
-        i_world = World(world);
+    modifier onlyOwnerOf(uint256 player) {
+        if (msg.sender != ownerOf(player)) {
+            revert Player_OnlyAllowedForOwnerOf(player);
+        }
+        _;
     }
 
-    function create() external {
+    constructor(address world, uint256 price) ERC721("Player", "PLAYER") {
+        i_world = World(world);
+        i_price = price;
+    }
+
+    function create() external payable {
         if (balanceOf(msg.sender) > 0) {
-            revert MultiplePlayersNotAllowed();
+            revert Player_MultiplePlayersNotAllowed();
+        }
+
+        if (msg.value != i_price) {
+            revert Player_PaymentValueInvalid();
         }
 
         uint256 tokenId = _tokenIdCounter.current();
@@ -56,20 +72,27 @@ contract Player is IPlayer, ERC721 {
             ClassLibrary.SecondaryClass.None,
             location
         );
-        _tokenIdCounter.increment();
+
         _safeMint(msg.sender, tokenId);
+        s_tokenOwners[msg.sender] = tokenId;
+        i_world.mintCurrency{value: msg.value}();
+
+        _tokenIdCounter.increment();
+        emit PlayerCreated(tokenId);
     }
 
     function firstClassTransfer(
         uint256 player,
         ClassLibrary.PrimaryClass selected
-    ) external {
-        if (msg.sender != ownerOf(player)) {
-            revert NotEligibleForClassTransfer();
+    ) external onlyOwnerOf(player) {
+        if (
+            s_attributes[player].primaryClass != ClassLibrary.PrimaryClass.None
+        ) {
+            revert Player_NotEligibleForClassTransfer();
         }
 
         if (s_attributes[player].level < FIRST_CLASS_REQUIRED_LEVEL) {
-            revert NotEligibleForClassTransfer();
+            revert Player_NotEligibleForClassTransfer();
         }
 
         s_attributes[player].primaryClass = selected;
@@ -78,19 +101,15 @@ contract Player is IPlayer, ERC721 {
     function secondClassTransfer(
         uint256 player,
         ClassLibrary.SecondaryClass selected
-    ) public {
-        if (msg.sender != ownerOf(player)) {
-            revert NotEligibleForClassTransfer();
-        }
-
+    ) external onlyOwnerOf(player) {
         if (
             s_attributes[player].primaryClass == ClassLibrary.PrimaryClass.None
         ) {
-            revert NotEligibleForClassTransfer();
+            revert Player_NotEligibleForClassTransfer();
         }
 
         if (s_attributes[player].level < SECOND_CLASS_REQIRED_LEVEL) {
-            revert NotEligibleForClassTransfer();
+            revert Player_NotEligibleForClassTransfer();
         }
 
         uint256[3] memory options = ClassLibrary.getOptions(
@@ -98,15 +117,22 @@ contract Player is IPlayer, ERC721 {
         );
 
         if (!options.contains(uint256(selected))) {
-            revert InvalidClassOption(options);
+            revert Player_InvalidClassOption(options);
         }
 
         s_attributes[player].secondaryClass = selected;
     }
 
-    function levelUp(uint256 player, uint256[] memory points) public {
+    function awardXP(uint256 player, uint256 amount) public {
+        s_attributes[player].experience += amount;
+    }
+
+    function levelUp(
+        uint256 player,
+        uint256[6] memory points
+    ) public onlyOwnerOf(player) {
         if (points.sum() != MAX_DISTRIBUTABLE_POINTS) {
-            revert InvalidAttributePoints();
+            revert Player_InvalidAttributePoints();
         }
 
         StatsLibrary.Attributes memory attributes = s_attributes[player];
@@ -115,11 +141,20 @@ contract Player is IPlayer, ERC721 {
         );
 
         if (attributes.experience < requiredXp) {
-            revert CannotLevelUp(requiredXp - attributes.experience);
+            revert Player_CannotLevelUp(requiredXp - attributes.experience);
         }
 
         uint256 remainingXp = attributes.experience - requiredXp;
 
+        uint256[6] memory stats = s_stats[player];
+
+        unchecked {
+            for (uint256 i = 0; i < 6; i++) {
+                stats[i] += points[i];
+            }
+        }
+
+        s_stats[player] = stats;
         s_attributes[player].level++;
         s_attributes[player].experience = remainingXp;
     }
@@ -134,5 +169,9 @@ contract Player is IPlayer, ERC721 {
         uint256 player
     ) public view returns (StatsLibrary.Attributes memory) {
         return s_attributes[player];
+    }
+
+    function getPlayerOf(address account) public view returns (uint256) {
+        return s_tokenOwners[account];
     }
 }

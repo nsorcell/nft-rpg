@@ -5,7 +5,7 @@ import {ClassLibrary} from "./Class.sol";
 library StatsLibrary {
     enum Stats {
         STRENGTH,
-        DEXTERTY,
+        DEXTERITY,
         CONSTITUTION,
         INTELLECT,
         WIT,
@@ -46,7 +46,7 @@ library StatsLibrary {
         uint256[6] calldata stats
     ) public pure returns (uint256) {
         uint256 strength = stats[uint256(Stats.STRENGTH)];
-        uint256 dexterity = stats[uint256(Stats.DEXTERTY)];
+        uint256 dexterity = stats[uint256(Stats.DEXTERITY)];
         uint256 constitution = stats[uint256(Stats.CONSTITUTION)];
         uint256 intellect = stats[uint256(Stats.INTELLECT)];
         uint256 wit = stats[uint256(Stats.WIT)];
@@ -80,7 +80,7 @@ library StatsLibrary {
         uint256 secondaryStatValue = stats[uint256(markers[1])];
 
         uint256 strength = stats[uint256(Stats.STRENGTH)];
-        uint256 dexterity = stats[uint256(Stats.DEXTERTY)];
+        uint256 dexterity = stats[uint256(Stats.DEXTERITY)];
 
         return
             strength *
@@ -142,7 +142,7 @@ library StatsLibrary {
     ) public pure returns (uint256) {
         uint256 strength = stats[uint256(Stats.STRENGTH)];
         uint256 constitution = stats[uint256(Stats.CONSTITUTION)];
-        uint256 dexterity = stats[uint256(Stats.DEXTERTY)];
+        uint256 dexterity = stats[uint256(Stats.DEXTERITY)];
 
         return constitution * 8 + strength * 6 + dexterity * 4;
     }
@@ -166,23 +166,23 @@ library StatsLibrary {
             attributes.secondaryClass
         );
 
-        uint256 dexComponent = markers[0] == Stats.DEXTERTY
+        uint256 dexComponent = markers[0] == Stats.DEXTERITY
             ? 20
-            : markers[1] == Stats.DEXTERTY
+            : markers[1] == Stats.DEXTERITY
             ? 10
             : 5;
         uint256 luckComponent = markers[1] == Stats.LUCK ? 25 : 10;
 
         uint256 maxCritChance = dexComponent + luckComponent;
 
-        uint256 dexBonus = markers[0] == Stats.DEXTERTY
+        uint256 dexBonus = markers[0] == Stats.DEXTERITY
             ? 5
-            : markers[1] == Stats.DEXTERTY
+            : markers[1] == Stats.DEXTERITY
             ? 3
             : 0;
         uint256 luckBonus = markers[1] == Stats.LUCK ? 7 : 0;
 
-        uint256 dexterity = stats[uint256(Stats.DEXTERTY)];
+        uint256 dexterity = stats[uint256(Stats.DEXTERITY)];
         uint256 luck = stats[uint256(Stats.LUCK)];
 
         uint256 critChance = (luck / 4 + dexterity / 8) + luckBonus + dexBonus;
@@ -244,7 +244,7 @@ library StatsLibrary {
         return
             StatsStruct(
                 stats[uint(Stats.STRENGTH)],
-                stats[uint(Stats.DEXTERTY)],
+                stats[uint(Stats.DEXTERITY)],
                 stats[uint(Stats.CONSTITUTION)],
                 stats[uint(Stats.INTELLECT)],
                 stats[uint(Stats.WIT)],

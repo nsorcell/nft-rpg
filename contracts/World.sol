@@ -6,45 +6,54 @@ import {ISuperToken} from "@superfluid-finance/ethereum-contracts/contracts/inte
 import {ManaReserve} from "./ManaReserve.sol";
 import {Player} from "./tokens/Player.sol";
 import {IWorld} from "./interfaces/IWorld.sol";
-import {GuildRegistry} from "./GuildRegistry.sol";
+import {Currency} from "./tokens/Currency.sol";
+import "./libraries/Errors.sol";
 
 contract World is IWorld, Ownable {
+    uint256 private immutable i_currencyRatio;
+
     bool private s_initialized = false;
 
     Player private s_player;
     ISuperToken private s_manaX;
     ManaReserve private s_manaReserve;
-    GuildRegistry private s_guildRegistry;
+    Currency private s_currency;
 
     modifier ready() {
         if (!s_initialized) {
-            revert NotInitialized();
+            revert World_NotInitialized();
         }
         _;
     }
 
     modifier onlyPlayer() {
         if (msg.sender != address(s_player)) {
-            revert Unauthorized();
+            revert World_Unauthorized();
         }
         _;
     }
 
-    constructor() Ownable() {}
+    constructor(uint256 currencyRatio) Ownable() {
+        i_currencyRatio = currencyRatio;
+    }
 
     function initialize(
         Player player,
         ISuperToken mana,
         ManaReserve manaReserve,
-        GuildRegistry guildRegistry
+        Currency currency
     ) external onlyOwner {
         s_player = player;
         s_manaX = mana;
         s_manaReserve = manaReserve;
-        s_guildRegistry = guildRegistry;
+        s_currency = currency;
 
         manaReserve.connectWorld(mana);
 
         s_initialized = true;
+    }
+
+    function mintCurrency() public payable ready {
+        s_currency.mint(address(this), msg.value * i_currencyRatio);
     }
 }

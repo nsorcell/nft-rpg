@@ -4,6 +4,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {AddressArrayUtils} from "./libraries/ArrayUtils.sol";
 import {IGuildRegistry} from "./interfaces/IGuildRegistry.sol";
 import {Guild} from "./Guild.sol";
+import "./libraries/Errors.sol";
 
 contract GuildRegistry is IGuildRegistry, Ownable {
     using AddressArrayUtils for address[];
@@ -16,7 +17,7 @@ contract GuildRegistry is IGuildRegistry, Ownable {
 
     modifier onlyGuilds() {
         if (!s_guilds.contains(msg.sender)) {
-            revert IGuildRegistry_OnlyAllowedForGuilds();
+            revert GuildRegistry_OnlyAllowedForGuilds();
         }
         _;
     }
@@ -25,7 +26,7 @@ contract GuildRegistry is IGuildRegistry, Ownable {
 
     function register() public {
         if (s_foundingRequests.contains(msg.sender)) {
-            revert IGuildRegistry_GuildAlreadyExists();
+            revert GuildRegistry_GuildAlreadyExists();
         }
 
         s_foundingRequests.push(msg.sender);
@@ -40,7 +41,7 @@ contract GuildRegistry is IGuildRegistry, Ownable {
 
     function accept(address guild) public onlyOwner {
         if (s_guilds.contains(guild)) {
-            revert IGuildRegistry_GuildAlreadyRegistered();
+            revert GuildRegistry_GuildAlreadyRegistered();
         }
 
         (bool found, uint256 index) = s_foundingRequests.indexOf(guild);
@@ -79,18 +80,18 @@ contract GuildRegistry is IGuildRegistry, Ownable {
         (bool member, address guild) = isMemberOfAnyGuild(candidate);
 
         if (member) {
-            revert IGuildRegistry_AlreadyMemberOfAnotherGuild(guild);
+            revert GuildRegistry_AlreadyMemberOfAnotherGuild(guild);
         }
 
         if (Guild(msg.sender).isMember(candidate)) {
             s_members[candidate] = msg.sender;
-        }
 
-        emit GuildRegistry_GuildEvent(
-            candidate,
-            msg.sender,
-            GuildEventType.REGISTER_MEMBER
-        );
+            emit GuildRegistry_GuildEvent(
+                candidate,
+                msg.sender,
+                GuildEventType.REGISTER_MEMBER
+            );
+        }
     }
 
     function unregisterMember(address member) public onlyGuilds {

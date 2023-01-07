@@ -4,9 +4,7 @@ import {StatsLibrary} from "../../libraries/Stats.sol";
 import {ClassLibrary} from "../../libraries/Class.sol";
 
 interface IPlayer {
-    error MultiplePlayersNotAllowed();
-    error InvalidAttributePoints();
-    error CannotLevelUp(uint256 missingXp);
-    error NotEligibleForClassTransfer();
-    error InvalidClassOption(uint256[3] validOptions);
+
+
+    event PlayerCreated(uint256 playerId);
 }

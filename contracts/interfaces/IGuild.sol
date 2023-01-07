@@ -2,18 +2,6 @@
 pragma solidity ^0.8.16;
 
 interface IGuild {
-    error IGuild_AlreadyInRole();
-    error IGuild_AlreadyMemberOfAnotherGuild(address guild);
-    error IGuild_CandidateNotFound();
-    error IGuild_CannotExpelLeader();
-    error IGuild_CannotChangeLeaderRole();
-    error IGuild_InvalidRole();
-    error IGuild_NewLeaderMustBeDifferent();
-    error IGuild_NewLeaderMustBeInGuild();
-    error IGuild_NotAMember();
-    error IGuild_NotInRole();
-    error IGuild_Unauthorized();
-
     enum Role {
         MEMBER,
         OFFICER,

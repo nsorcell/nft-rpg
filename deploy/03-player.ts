@@ -1,6 +1,6 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { developmentChains } from "../helper-hardhat.config";
+import { developmentChains, networkConfig } from "../helper-hardhat.config";
 import verify from "../utils/verify";
 
 export const CONTRACT = "Player";
@@ -15,7 +15,9 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const lStats = await deployments.get("StatsLibrary");
   const lArray = await deployments.get("UintArrayUtils");
 
-  const args: any[] = [world.address];
+  const config = networkConfig[network.config.chainId!];
+
+  const args: any[] = [world.address, config.mintPrice];
 
   log(`Deploying ${CONTRACT} and waiting for confirmations...`);
 

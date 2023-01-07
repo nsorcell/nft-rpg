@@ -1,37 +1,35 @@
+import { ethers } from "hardhat";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { developmentChains, networkConfig } from "../helper-hardhat.config";
 import verify from "../utils/verify";
 
-export const CONTRACT = "World";
+export const CONTRACT = "Currency";
 
-const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
+const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { getNamedAccounts, deployments, network } = hre;
   const { deploy, log } = deployments;
   const { deployer } = await getNamedAccounts();
-
-  const config = networkConfig[network.config.chainId!];
-
-  const args: any[] = [config.currencyRatio];
+  const accounts = await ethers.getSigners();
 
   log(`Deploying ${CONTRACT} and waiting for confirmations...`);
 
-  const world = await deploy(CONTRACT, {
-    from: deployer,
-    args,
-    log: true,
-    waitConfirmations: developmentChains.includes(network.name) ? 1 : 5,
-  });
+  const config = networkConfig[network.config.chainId!];
 
-  log(`${CONTRACT} deployed at ${world.address}`);
+  const world = await deployments.get("World");
+  const currencyDeployment = await deploy(CONTRACT, {
+    from: deployer,
+    args: [world.address, config.vatPercentage],
+    log: true,
+  });
 
   if (
     !developmentChains.includes(network.name) &&
     process.env.ETHERSCAN_API_KEY
   ) {
-    await verify(world.address, args);
+    await verify(currencyDeployment.address, []);
   }
 };
 
 export default deploy;
-deploy.tags = ["all", "world"];
+deploy.tags = ["all", "currency"];

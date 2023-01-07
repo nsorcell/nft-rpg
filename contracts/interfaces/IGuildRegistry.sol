@@ -2,13 +2,6 @@
 pragma solidity ^0.8.16;
 
 interface IGuildRegistry {
-    error IGuildRegistry_AlreadyMemberOfAnotherGuild(address guild);
-    error IGuildRegistry_OnlyAllowedForGuilds();
-    error IGuildRegistry_OnlyAllowedForLeader();
-    error IGuildRegistry_GuildDoesntExist();
-    error IGuildRegistry_GuildAlreadyExists();
-    error IGuildRegistry_GuildAlreadyRegistered();
-
     enum GuildEventType {
         DISBANDED,
         REGISTER_MEMBER,

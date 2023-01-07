@@ -81,7 +81,7 @@ library ClassLibrary {
             .INTELLECT;
         primaryMarkers[uint256(PrimaryClass.Rogue)] = StatsLibrary
             .Stats
-            .DEXTERTY;
+            .DEXTERITY;
         primaryMarkers[uint256(PrimaryClass.Guardian)] = StatsLibrary
             .Stats
             .CONSTITUTION;
@@ -98,7 +98,7 @@ library ClassLibrary {
         // Warrior
         secondaryMarkers[uint256(SecondaryClass.Reaper)] = StatsLibrary
             .Stats
-            .DEXTERTY;
+            .DEXTERITY;
         secondaryMarkers[uint256(SecondaryClass.Duelist)] = StatsLibrary
             .Stats
             .CONSTITUTION;

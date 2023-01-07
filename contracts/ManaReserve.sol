@@ -6,6 +6,7 @@ import {IManaReserve} from "./interfaces/IManaReserve.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {SuperTokenV1Library} from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol";
 import {World} from "./World.sol";
+import "./libraries/Errors.sol";
 
 contract ManaReserve is IManaReserve, Ownable {
     using SuperTokenV1Library for ISuperToken;
@@ -17,7 +18,7 @@ contract ManaReserve is IManaReserve, Ownable {
 
     modifier requireConnected() {
         if (!isConnected) {
-            revert WorldNotConnected();
+            revert ManaReserve_WorldNotConnected();
         }
         _;
     }

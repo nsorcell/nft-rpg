@@ -85,4 +85,15 @@ library UintArrayUtils {
             return result;
         }
     }
+
+    function sum(uint256[6] memory array) public pure returns (uint256) {
+        unchecked {
+            uint256 result = 0;
+            for (uint256 i = 0; i < array.length; i++) {
+                result += array[i];
+            }
+
+            return result;
+        }
+    }
 }

@@ -5,6 +5,7 @@ import {IGuild} from "./interfaces/IGuild.sol";
 import {AddressArrayUtils} from "./libraries/ArrayUtils.sol";
 import {GuildRegistry} from "./GuildRegistry.sol";
 import {World} from "./World.sol";
+import "./libraries/Errors.sol";
 
 contract Guild is IGuild, AccessControl {
     using AddressArrayUtils for address[];
@@ -53,7 +54,7 @@ contract Guild is IGuild, AccessControl {
 
     function denyRequest(address candidate) external {
         if (!hasRole(LEADER, msg.sender) || !hasRole(OFFICER, msg.sender)) {
-            revert IGuild_Unauthorized();
+            revert Guild_Unauthorized();
         }
 
         (bool found, uint256 index) = s_recruitmentRequests.indexOf(candidate);
@@ -63,17 +64,17 @@ contract Guild is IGuild, AccessControl {
 
             emit Guild_JoinDenied(candidate);
         } else {
-            revert IGuild_CandidateNotFound();
+            revert Guild_CandidateNotFound();
         }
     }
 
     function recruit(address candidate) external {
         if (!hasRole(LEADER, msg.sender) || !hasRole(OFFICER, msg.sender)) {
-            revert IGuild_Unauthorized();
+            revert Guild_Unauthorized();
         }
 
         if (!s_recruitmentRequests.contains(candidate)) {
-            revert IGuild_CandidateNotFound();
+            revert Guild_CandidateNotFound();
         }
 
         (bool member, address guild) = s_guildRegistry.isMemberOfAnyGuild(
@@ -81,7 +82,7 @@ contract Guild is IGuild, AccessControl {
         );
 
         if (member) {
-            revert IGuild_AlreadyMemberOfAnotherGuild(guild);
+            revert Guild_AlreadyMemberOfAnotherGuild(guild);
         }
 
         (bool found, uint256 index) = s_recruitmentRequests.indexOf(candidate);
@@ -99,7 +100,7 @@ contract Guild is IGuild, AccessControl {
 
     function expel(address member) external onlyRole(LEADER) {
         if (member == s_leader) {
-            revert IGuild_CannotExpelLeader();
+            revert Guild_CannotExpelLeader();
         }
 
         (bool found, uint256 index) = s_memberList.indexOf(member);
@@ -114,20 +115,20 @@ contract Guild is IGuild, AccessControl {
 
             emit Guild_MemberExpelled(member);
         } else {
-            revert IGuild_NotAMember();
+            revert Guild_NotAMember();
         }
     }
 
     function assignRole(Role role, address member) external onlyRole(LEADER) {
         if (member == s_leader) {
-            revert IGuild_CannotChangeLeaderRole();
+            revert Guild_CannotChangeLeaderRole();
         }
 
         bytes32 currentRoleName = getRole(member);
         bytes32 targetRoleName = s_roles[uint256(role)];
 
         if (currentRoleName == targetRoleName) {
-            revert IGuild_AlreadyInRole();
+            revert Guild_AlreadyInRole();
         }
 
         _revokeRole(currentRoleName, member);
@@ -140,11 +141,11 @@ contract Guild is IGuild, AccessControl {
         (bool found, uint256 index) = s_memberList.indexOf(s_leader);
 
         if (!found) {
-            revert IGuild_NewLeaderMustBeInGuild();
+            revert Guild_NewLeaderMustBeInGuild();
         }
 
         if (newLeader != s_leader) {
-            revert IGuild_NewLeaderMustBeDifferent();
+            revert Guild_NewLeaderMustBeDifferent();
         }
 
         s_memberList.remove(index);
