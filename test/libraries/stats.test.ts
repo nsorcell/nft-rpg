@@ -158,17 +158,9 @@ describe("StatsLibrary", () => {
 
   describe.only("calculatePhysicalDamage", () => {
     it("should return the calculated physical damage", async () => {
-      const lvl1 = await generateStatsFor(statsLib, 1);
-      const lvl5 = await generateStatsFor(statsLib, 5);
-      const lvl10 = await generateStatsFor(statsLib, 10);
-      const lvl15 = await generateStatsFor(statsLib, 15);
-      const lvl20 = await generateStatsFor(statsLib, 20);
+      const lvl100 = await generateStatsFor(statsLib, 100);
 
-      fs.writeFileSync(`lvl1.json`, JSON.stringify(lvl1));
-      fs.writeFileSync(`lvl5.json`, JSON.stringify(lvl5));
-      fs.writeFileSync(`lvl10.json`, JSON.stringify(lvl10));
-      fs.writeFileSync(`lvl15.json`, JSON.stringify(lvl15));
-      fs.writeFileSync(`lvl20.json`, JSON.stringify(lvl20));
+      fs.writeFileSync(`lvl100.json`, JSON.stringify(lvl100));
     });
   });
 });

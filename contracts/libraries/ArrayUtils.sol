@@ -55,6 +55,16 @@ library StringArrayUtils {
 }
 
 library UintArrayUtils {
+    function contains(uint[3] memory array, uint n) public pure returns (bool) {
+        unchecked {
+            for (uint256 i = 0; i < array.length; i++) {
+                if (array[i++] == n) return true;
+            }
+
+            return false;
+        }
+    }
+
     function contains(uint[] memory array, uint n) public pure returns (bool) {
         unchecked {
             for (uint256 i = 0; i < array.length; i++) {

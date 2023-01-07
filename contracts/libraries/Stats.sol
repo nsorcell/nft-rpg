@@ -13,6 +13,15 @@ library StatsLibrary {
         VOID
     }
 
+    struct StatsStruct {
+        uint256 strength;
+        uint256 dexterity;
+        uint256 constitution;
+        uint256 intellect;
+        uint256 wit;
+        uint256 luck;
+    }
+
     struct Location {
         uint256 x;
         uint256 y;
@@ -24,7 +33,6 @@ library StatsLibrary {
         ClassLibrary.PrimaryClass primaryClass;
         ClassLibrary.SecondaryClass secondaryClass;
         Location location;
-        uint256 speed;
     }
 
     function calculateXPForNextLevel(
@@ -87,7 +95,7 @@ library StatsLibrary {
 
     function calculatePhysicalDamage(
         uint256[6] calldata stats,
-        uint[7] calldata attributes
+        uint[6] calldata attributes
     ) external pure returns (uint256) {
         Attributes memory attributesStruct = attributesArrToStruct(attributes);
 
@@ -122,7 +130,7 @@ library StatsLibrary {
 
     function calculateMagicDamage(
         uint256[6] calldata stats,
-        uint[7] calldata attributes
+        uint[6] calldata attributes
     ) external pure returns (uint256) {
         Attributes memory attributesStruct = attributesArrToStruct(attributes);
 
@@ -184,7 +192,7 @@ library StatsLibrary {
 
     function calculatePhysicalCritChance(
         uint256[6] calldata stats,
-        uint[7] calldata attributes
+        uint[6] calldata attributes
     ) public pure returns (uint256) {
         Attributes memory attributesStruct = attributesArrToStruct(attributes);
 
@@ -223,16 +231,30 @@ library StatsLibrary {
 
     function calculateMagicCritChance(
         uint256[6] calldata stats,
-        uint[7] calldata attributes
+        uint[6] calldata attributes
     ) public pure returns (uint256) {
         Attributes memory attributesStruct = attributesArrToStruct(attributes);
 
         return calculateMagicCritChance(stats, attributesStruct);
     }
 
+    function statsArrToStruct(
+        uint[6] memory stats
+    ) public pure returns (StatsStruct memory) {
+        return
+            StatsStruct(
+                stats[uint(Stats.STRENGTH)],
+                stats[uint(Stats.DEXTERTY)],
+                stats[uint(Stats.CONSTITUTION)],
+                stats[uint(Stats.INTELLECT)],
+                stats[uint(Stats.WIT)],
+                stats[uint(Stats.LUCK)]
+            );
+    }
+
     function attributesArrToStruct(
-        uint[7] calldata attributes
-    ) internal pure returns (Attributes memory) {
+        uint[6] calldata attributes
+    ) public pure returns (Attributes memory) {
         Location memory location = Location(attributes[4], attributes[5]);
 
         return
@@ -241,8 +263,7 @@ library StatsLibrary {
                 attributes[1],
                 ClassLibrary.PrimaryClass(attributes[2]),
                 ClassLibrary.SecondaryClass(attributes[3]),
-                location,
-                attributes[6]
+                location
             );
     }
 }

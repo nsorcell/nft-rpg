@@ -23,7 +23,7 @@ contract GuildRegistry is IGuildRegistry, Ownable {
 
     constructor() Ownable() {}
 
-    function register() public onlyGuilds {
+    function register() public {
         if (s_foundingRequests.contains(msg.sender)) {
             revert IGuildRegistry_GuildAlreadyExists();
         }
@@ -35,22 +35,6 @@ contract GuildRegistry is IGuildRegistry, Ownable {
             leader,
             msg.sender,
             GuildEventType.REGISTER_REQUEST_RECEIVED
-        );
-    }
-
-    function unregister() public onlyGuilds {
-        (bool found, uint256 index) = s_guilds.indexOf(msg.sender);
-
-        if (found) {
-            s_guilds.remove(index);
-        }
-
-        address leader = Guild(msg.sender).getLeader();
-
-        emit GuildRegistry_GuildEvent(
-            leader,
-            msg.sender,
-            GuildEventType.UNREGISTER_REQUEST_RECEIVED
         );
     }
 
@@ -72,6 +56,22 @@ contract GuildRegistry is IGuildRegistry, Ownable {
             leader,
             guild,
             GuildEventType.REGISTER_REQUEST_ACCEPTED
+        );
+    }
+
+    function unregister() public onlyGuilds {
+        (bool found, uint256 index) = s_guilds.indexOf(msg.sender);
+
+        if (found) {
+            s_guilds.remove(index);
+        }
+
+        address leader = Guild(msg.sender).getLeader();
+
+        emit GuildRegistry_GuildEvent(
+            leader,
+            msg.sender,
+            GuildEventType.UNREGISTER_REQUEST_RECEIVED
         );
     }
 

@@ -7,4 +7,6 @@ interface IPlayer {
     error MultiplePlayersNotAllowed();
     error InvalidAttributePoints();
     error CannotLevelUp(uint256 missingXp);
+    error NotEligibleForClassTransfer();
+    error InvalidClassOption(uint256[3] validOptions);
 }
