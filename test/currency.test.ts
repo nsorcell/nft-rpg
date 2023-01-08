@@ -60,7 +60,7 @@ describe("Currency", () => {
     await snapshot.loadSnapshot();
   });
 
-  describe.only("World functionality", () => {
+  describe("Currency functionality", () => {
     it("should be transfer currency to another player, which is taxed.", async () => {
       const currencyDistributor = await world.CURRENCY_DISTRIBUTOR();
       await world.grantRole(currencyDistributor, accounts[0].address);

@@ -19,7 +19,7 @@ import {
   World__factory,
 } from "../types";
 
-describe("tokens", () => {
+describe("Mana", () => {
   let provider: JsonRpcProvider,
     accounts: SignerWithAddress[],
     framework: Framework,

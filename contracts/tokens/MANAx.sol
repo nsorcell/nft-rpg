@@ -17,4 +17,8 @@ contract MANAx is SuperTokenBase, Ownable {
         _mint(receiver, initialSupply, userData);
         _transferOwnership(receiver);
     }
+
+    function burn(address from, uint256 amount) external {
+        _burn(from, amount, "0x");
+    }
 }

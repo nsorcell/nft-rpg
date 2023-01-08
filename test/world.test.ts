@@ -1,7 +1,9 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
+import { mine } from "@nomicfoundation/hardhat-network-helpers";
 import "@nomiclabs/hardhat-ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { Framework } from "@superfluid-finance/sdk-core";
+import { SuperToken } from "@superfluid-finance/ethereum-contracts/build/typechain";
+import { Framework, SuperToken__factory } from "@superfluid-finance/sdk-core";
 import { expect } from "chai";
 import { parseEther } from "ethers/lib/utils";
 import { deployments, ethers } from "hardhat";
@@ -22,7 +24,8 @@ describe("World", () => {
     framework: Framework,
     currency: IERC20Upgradeable,
     world: World,
-    player: Player;
+    player: Player,
+    mana: SuperToken;
 
   before(async () => {
     provider = new ethers.providers.JsonRpcBatchProvider(
@@ -35,6 +38,7 @@ describe("World", () => {
     const playerDeployment = await deployments.get("Player");
     const worldDeployment = await deployments.get("World");
     const currencyDeployment = await deployments.get("Currency");
+    const manaDeployment = await deployments.get("MANAx");
 
     player = Player__factory.connect(playerDeployment.address, accounts[0]);
     world = World__factory.connect(worldDeployment.address, accounts[0]);
@@ -42,6 +46,7 @@ describe("World", () => {
       currencyDeployment.address,
       accounts[0]
     );
+    mana = SuperToken__factory.connect(manaDeployment.address, accounts[0]);
   });
 
   beforeEach(async () => {
@@ -83,6 +88,21 @@ describe("World", () => {
       const balance = await player.gameBalanceOf(0);
 
       expect(balance).to.equal(400);
+    });
+    it("should be able to burn mana", async () => {
+      const manaBurner = await world.MANA_BURNER();
+      await world.grantRole(manaBurner, accounts[0].address);
+
+      await mine(100);
+
+      const worldMana1 = await mana.balanceOf(world.address);
+
+      await world.burnMana(100);
+
+      const worldMana2 = await mana.balanceOf(world.address);
+
+      // +2 needed to adjust for flowrate
+      expect(worldMana2).to.equal(worldMana1.sub(100).add(2));
     });
   });
 });

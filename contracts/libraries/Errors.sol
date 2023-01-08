@@ -39,3 +39,4 @@ error ManaReserve_WorldNotConnected();
 // World
 error World_NotInitialized();
 error World_CurrencyMustBeBacked();
+error World_NotEnoughMana();

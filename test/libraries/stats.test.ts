@@ -1,7 +1,6 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import "@nomiclabs/hardhat-ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import fs from "fs";
 import { deployments, ethers } from "hardhat";
 import {
   Player,
@@ -157,9 +156,7 @@ describe("StatsLibrary", () => {
 
   describe("calculatePhysicalDamage", () => {
     it("should return the calculated physical damage", async () => {
-      const lvl100 = await generateStatsFor(statsLib, 100);
-
-      fs.writeFileSync(`lvl100.json`, JSON.stringify(lvl100));
+      // TODO: check all the damages on different levels
     });
   });
 });
