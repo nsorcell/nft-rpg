@@ -36,7 +36,7 @@ describe("Player", () => {
     const currencyDeployment = await deployments.get("Currency");
 
     player = Player__factory.connect(playerDeployment.address, accounts[0]);
-    world = World__factory.connect(worldDeployment.address, provider);
+    world = World__factory.connect(worldDeployment.address, accounts[0]);
     currency = IERC20Upgradeable__factory.connect(
       currencyDeployment.address,
       accounts[0]
@@ -66,7 +66,10 @@ describe("Player", () => {
       expect(attributes.experience).to.equal(0);
       expect(attributes.level).to.equal(1);
 
-      await player.awardXP(0, 120);
+      const xpDistributor = await world.XP_DISTRIBUTOR();
+      await world.grantRole(xpDistributor, accounts[0].address);
+
+      await world.awardXP(0, 120);
 
       attributes = await player.getAttributes(0);
 

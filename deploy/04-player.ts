@@ -11,13 +11,14 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer } = await getNamedAccounts();
 
   const world = await deployments.get("World");
+  const currency = await deployments.get("Currency");
   const lClass = await deployments.get("ClassLibrary");
   const lStats = await deployments.get("StatsLibrary");
   const lArray = await deployments.get("UintArrayUtils");
 
   const config = networkConfig[network.config.chainId!];
 
-  const args: any[] = [world.address, config.mintPrice];
+  const args: any[] = [world.address, currency.address, config.mintPrice];
 
   log(`Deploying ${CONTRACT} and waiting for confirmations...`);
 

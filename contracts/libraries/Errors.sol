@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: AGPLv3
 pragma solidity ^0.8.16;
 
+// Common
+error Unauthorized();
+
 // Player
 error Player_MultiplePlayersNotAllowed();
 error Player_InvalidAttributePoints();
@@ -21,7 +24,6 @@ error Guild_NewLeaderMustBeDifferent();
 error Guild_NewLeaderMustBeInGuild();
 error Guild_NotAMember();
 error Guild_NotInRole();
-error Guild_Unauthorized();
 
 // GuildRegistry
 error GuildRegistry_AlreadyMemberOfAnotherGuild(address guild);
@@ -36,4 +38,4 @@ error ManaReserve_WorldNotConnected();
 
 // World
 error World_NotInitialized();
-error World_Unauthorized();
+error World_CurrencyMustBeBacked();

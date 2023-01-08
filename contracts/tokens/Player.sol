@@ -6,6 +6,7 @@ import {World} from "../World.sol";
 import {IPlayer} from "../interfaces/tokens/IPlayer.sol";
 import {StatsLibrary} from "../libraries/Stats.sol";
 import {ClassLibrary} from "../libraries/Class.sol";
+import {Currency} from "../tokens/Currency.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import {UintArrayUtils} from "../libraries/ArrayUtils.sol";
@@ -24,6 +25,7 @@ contract Player is IPlayer, ERC721 {
     uint256 private constant INITIAL_STAT_VALUE = 6;
 
     World private immutable i_world;
+    Currency private immutable i_currency;
     Counters.Counter private _tokenIdCounter;
 
     uint256 private i_price;
@@ -39,8 +41,13 @@ contract Player is IPlayer, ERC721 {
         _;
     }
 
-    constructor(address world, uint256 price) ERC721("Player", "PLAYER") {
-        i_world = World(world);
+    constructor(
+        World world,
+        Currency currency,
+        uint256 price
+    ) ERC721("Player", "PLAYER") {
+        i_world = world;
+        i_currency = currency;
         i_price = price;
     }
 
@@ -125,12 +132,6 @@ contract Player is IPlayer, ERC721 {
         emit Player_SecondClassTransfer(player, uint256(selected));
     }
 
-    function awardXP(uint256 player, uint256 amount) public {
-        s_attributes[player].experience += amount;
-
-        emit Player_XPReceived(player, amount);
-    }
-
     function levelUp(
         uint256 player,
         uint256[6] memory points
@@ -163,6 +164,22 @@ contract Player is IPlayer, ERC721 {
         s_attributes[player].experience = remainingXp;
 
         emit Player_LevelUp(player);
+    }
+
+    function updateXp(uint256 player, uint256 amount) public {
+        if (msg.sender != address(i_world)) {
+            revert Unauthorized();
+        }
+
+        s_attributes[player].experience += amount;
+
+        emit Player_XPReceived(player, amount);
+    }
+
+    function gameBalanceOf(uint256 player) public view returns (uint256) {
+        address owner = ownerOf(player);
+
+        return i_currency.balanceOf(owner);
     }
 
     function getStats(

@@ -54,7 +54,7 @@ contract Guild is IGuild, AccessControl {
 
     function denyRequest(address candidate) external {
         if (!hasRole(LEADER, msg.sender) || !hasRole(OFFICER, msg.sender)) {
-            revert Guild_Unauthorized();
+            revert Unauthorized();
         }
 
         (bool found, uint256 index) = s_recruitmentRequests.indexOf(candidate);
@@ -70,7 +70,7 @@ contract Guild is IGuild, AccessControl {
 
     function recruit(address candidate) external {
         if (!hasRole(LEADER, msg.sender) || !hasRole(OFFICER, msg.sender)) {
-            revert Guild_Unauthorized();
+            revert Unauthorized();
         }
 
         if (!s_recruitmentRequests.contains(candidate)) {
