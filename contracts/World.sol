@@ -52,10 +52,11 @@ contract World is IWorld, AccessControl {
     }
 
     function awardCurrency(
-        address to,
+        uint256 player,
         uint256 amount
     ) public ready onlyRole(CURRENCY_DISTRIBUTOR) {
-        s_currency.transfer(to, amount);
+        address owner = s_player.ownerOf(player);
+        s_currency.transfer(owner, amount);
     }
 
     function awardXP(

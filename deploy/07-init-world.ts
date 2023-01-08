@@ -1,6 +1,7 @@
 import { ethers } from "hardhat";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { World__factory } from "../types";
+import { SnapshotManager } from "../utils/snapshot";
 
 const init = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments, network } = hre;
@@ -29,4 +30,7 @@ const init = async (hre: HardhatRuntimeEnvironment) => {
 };
 
 export default init;
+
+export const snapshot = new SnapshotManager();
+
 init.tags = ["all", "init"];

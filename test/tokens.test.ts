@@ -3,8 +3,11 @@ import { mine } from "@nomicfoundation/hardhat-network-helpers";
 import "@nomiclabs/hardhat-ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Framework, SuperToken__factory } from "@superfluid-finance/sdk-core";
-import { deployments, ethers, network } from "hardhat";
+import { expect } from "chai";
+import { BigNumber } from "ethers";
+import { deployments, ethers } from "hardhat";
 import { Deployment } from "hardhat-deploy/types";
+import { snapshot } from "../deploy/07-init-world";
 
 import {
   ManaReserve,
@@ -25,10 +28,6 @@ describe("tokens", () => {
     manaDeployment: Deployment;
 
   before(async () => {
-    await deployments.fixture("all");
-
-    console.log(network);
-
     provider = new ethers.providers.JsonRpcBatchProvider(
       "http://localhost:8545"
     );
@@ -47,12 +46,17 @@ describe("tokens", () => {
     reserve = ManaReserve__factory.connect(reserveDeployment.address, provider);
   });
 
+  beforeEach(async () => {
+    await snapshot.loadSnapshot();
+  });
+
   describe("Flowrate", () => {
-    it("do", async () => {
+    it("should create a flowrate between ManaReserve, and World", async () => {
       const mana = SuperToken__factory.connect(
         manaDeployment.address,
         provider
       );
+
       let balance = await mana.balanceOf(reserve.address);
       let worldBalance = await mana.balanceOf(world.address);
 
@@ -63,14 +67,13 @@ describe("tokens", () => {
         superToken: mana.address,
       });
 
-      console.log({ balance, worldBalance, flow });
+      expect(BigNumber.from(flow.flowRate)).gt(0);
 
-      await mine(1000);
+      await mine(100);
 
       balance = await mana.balanceOf(reserve.address);
-      worldBalance = await mana.balanceOf(world.address);
 
-      console.log({ balance, worldBalance });
+      expect(balance).gt(100);
     });
   });
 });

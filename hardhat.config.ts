@@ -1,6 +1,5 @@
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
-import "hardhat-gui";
 
 import { HardhatUserConfig } from "hardhat/config";
 
@@ -8,14 +7,15 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
+export const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 // Goerli
-const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL;
+export const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL;
 
 // Polygon
-const POLYGON_MAINNET_RPC_URL = process.env.POLYGON_MAINNET_RPC_URL ?? "";
-const MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL ?? "";
+export const POLYGON_MAINNET_RPC_URL =
+  process.env.POLYGON_MAINNET_RPC_URL ?? "";
+export const MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL ?? "";
 
 // Services
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY ?? "";

@@ -54,7 +54,6 @@ const getClassStatsWithDistribution = (
     primaryClass,
     secondaryClass,
     location: { x: 0, y: 0 },
-    speed: 100,
   };
 
   return { stats, attributes };

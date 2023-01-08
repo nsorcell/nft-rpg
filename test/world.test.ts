@@ -6,6 +6,7 @@ import { expect } from "chai";
 import { parseEther } from "ethers/lib/utils";
 import { deployments, ethers } from "hardhat";
 import { snapshot } from "../deploy/07-init-world";
+
 import {
   IERC20Upgradeable,
   IERC20Upgradeable__factory,
@@ -15,7 +16,7 @@ import {
   World__factory,
 } from "../types";
 
-describe("Player", () => {
+describe("World", () => {
   let provider: JsonRpcProvider,
     accounts: SignerWithAddress[],
     framework: Framework,
@@ -58,23 +59,11 @@ describe("Player", () => {
     await snapshot.loadSnapshot();
   });
 
-  describe("Player functionality", () => {
-    it("should be able to create one player", async () => {
-      expect(await player.getPlayerOf(accounts[0].address)).to.equal(0);
-      expect(await player.ownerOf(0)).to.equal(accounts[0].address);
-    });
-
-    it("should be able to award xp to level up the player", async () => {
-      let stats = await player.getStats(0);
+  describe("World functionality", () => {
+    it("should be able to award xp to the player", async () => {
       let attributes = await player.getAttributes(0);
 
-      expect(stats.strength).to.equal(6);
-      expect(stats.dexterity).to.equal(6);
-      expect(stats.constitution).to.equal(6);
-      expect(stats.intellect).to.equal(6);
-      expect(stats.wit).to.equal(6);
-      expect(stats.luck).to.equal(6);
-
+      expect(attributes.experience).to.equal(0);
       expect(attributes.level).to.equal(1);
 
       const xpDistributor = await world.XP_DISTRIBUTOR();
@@ -82,20 +71,21 @@ describe("Player", () => {
 
       await world.awardXP(0, 120);
 
-      await player.levelUp(0, [2, 1, 0, 0, 0, 0]);
-
-      stats = await player.getStats(0);
       attributes = await player.getAttributes(0);
 
-      expect(stats.strength).to.equal(8);
-      expect(stats.dexterity).to.equal(7);
-      expect(stats.constitution).to.equal(6);
-      expect(stats.intellect).to.equal(6);
-      expect(stats.wit).to.equal(6);
-      expect(stats.luck).to.equal(6);
+      expect(attributes.experience).to.equal(120);
+      expect(attributes.level).to.equal(1);
+    });
 
-      expect(attributes.experience).to.equal(8);
-      expect(attributes.level).to.equal(2);
+    it("should be able to award currency to the player", async () => {
+      const currencyDistributor = await world.CURRENCY_DISTRIBUTOR();
+      await world.grantRole(currencyDistributor, accounts[0].address);
+
+      await world.awardCurrency(0, 500);
+
+      const balance = await player.gameBalanceOf(0);
+
+      expect(balance).to.equal(400);
     });
   });
 });
