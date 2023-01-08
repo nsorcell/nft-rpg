@@ -84,6 +84,8 @@ contract Player is IPlayer, ERC721 {
         s_tokenOwners[msg.sender] = tokenId;
         i_world.mintCurrency{value: msg.value}();
 
+        i_world.adjustManaFlow();
+
         _tokenIdCounter.increment();
         emit Player_PlayerCreated(tokenId);
     }
@@ -164,6 +166,12 @@ contract Player is IPlayer, ERC721 {
         s_attributes[player].experience = remainingXp;
 
         emit Player_LevelUp(player);
+    }
+
+    function transferCurrency(uint256 toPlayer, uint256 amount) public {
+        address to = ownerOf(toPlayer);
+
+        i_currency.transferFrom(msg.sender, to, amount);
     }
 
     function updateXp(uint256 player, uint256 amount) public {

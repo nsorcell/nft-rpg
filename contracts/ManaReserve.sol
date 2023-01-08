@@ -12,7 +12,7 @@ contract ManaReserve is IManaReserve, Ownable {
     using SuperTokenV1Library for ISuperToken;
 
     bool private isConnected = false;
-    int96 private constant INITIAL_FLOWRATE = 1;
+    int96 private constant INITIAL_MANA_FLOW = 1;
 
     ISuperToken private MANAx;
 
@@ -29,14 +29,18 @@ contract ManaReserve is IManaReserve, Ownable {
 
     function connectWorld(ISuperToken mana) external onlyOwner {
         MANAx = mana;
-        MANAx.createFlow(msg.sender, INITIAL_FLOWRATE);
+        MANAx.createFlow(msg.sender, INITIAL_MANA_FLOW);
 
         isConnected = true;
     }
 
-    function updateManaFlow(
-        int96 flowIncrease
-    ) external onlyOwner requireConnected {
-        MANAx.updateFlow(msg.sender, flowIncrease);
+    function updateManaFlow(int96 to) external onlyOwner requireConnected {
+        MANAx.updateFlow(msg.sender, to);
+    }
+
+    function getManaFlowRate() external view returns (int96) {
+        (, int96 flowRate, , ) = MANAx.getFlowInfo(address(this), owner());
+
+        return flowRate;
     }
 }

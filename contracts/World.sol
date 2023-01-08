@@ -10,9 +10,12 @@ import {Currency} from "./tokens/Currency.sol";
 import "./libraries/Errors.sol";
 
 contract World is IWorld, AccessControl {
+    int96 public constant MANA_FLOW_PER_PLAYER = 1;
+
     bytes32 public constant CURRENCY_DISTRIBUTOR =
         keccak256("CURRENCY_DISTRIBUTOR");
     bytes32 public constant XP_DISTRIBUTOR = keccak256("XP_DISTRIBUTOR");
+    bytes32 public constant MANAFLOW_MANAGER = keccak256("MANAFLOW_MANAGER");
 
     uint256 private immutable i_currencyRatio;
 
@@ -46,15 +49,22 @@ contract World is IWorld, AccessControl {
         s_manaReserve = manaReserve;
         s_currency = currency;
 
+        _setupRole(MANAFLOW_MANAGER, address(player));
+
         manaReserve.connectWorld(mana);
 
         s_initialized = true;
     }
 
+    function adjustManaFlow() external ready onlyRole(MANAFLOW_MANAGER) {
+        int96 currentFlowRate = s_manaReserve.getManaFlowRate();
+        s_manaReserve.updateManaFlow(currentFlowRate + MANA_FLOW_PER_PLAYER);
+    }
+
     function awardCurrency(
         uint256 player,
         uint256 amount
-    ) public ready onlyRole(CURRENCY_DISTRIBUTOR) {
+    ) external ready onlyRole(CURRENCY_DISTRIBUTOR) {
         address owner = s_player.ownerOf(player);
         s_currency.transfer(owner, amount);
     }
@@ -62,11 +72,11 @@ contract World is IWorld, AccessControl {
     function awardXP(
         uint256 player,
         uint256 amount
-    ) public ready onlyRole(XP_DISTRIBUTOR) {
+    ) external ready onlyRole(XP_DISTRIBUTOR) {
         s_player.updateXp(player, amount);
     }
 
-    function mintCurrency() public payable ready {
+    function mintCurrency() external payable ready {
         if (msg.value == 0) {
             revert World_CurrencyMustBeBacked();
         }

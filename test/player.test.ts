@@ -64,7 +64,7 @@ describe("Player", () => {
       expect(await player.ownerOf(0)).to.equal(accounts[0].address);
     });
 
-    it("should be able to award xp to level up the player", async () => {
+    it("should be able to level up the player", async () => {
       let stats = await player.getStats(0);
       let attributes = await player.getAttributes(0);
 

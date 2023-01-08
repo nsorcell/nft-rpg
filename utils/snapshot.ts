@@ -24,8 +24,6 @@ export class SnapshotManager {
       });
 
       await this.createSnapshot();
-
-      console.log(`Snapshot ${this.snapshotId} loaded.`);
     } else {
       console.error(`Snapshot has not been taken`);
     }

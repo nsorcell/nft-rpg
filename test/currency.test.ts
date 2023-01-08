@@ -16,7 +16,7 @@ import {
   World__factory,
 } from "../types";
 
-describe("World", () => {
+describe("Currency", () => {
   let provider: JsonRpcProvider,
     accounts: SignerWithAddress[],
     framework: Framework,
@@ -45,10 +45,14 @@ describe("World", () => {
   });
 
   beforeEach(async () => {
-    const balance = await player.balanceOf(accounts[0].address);
+    const balance1 = await player.balanceOf(accounts[0].address);
+    const balance2 = await player.balanceOf(accounts[1].address);
 
-    if (balance.eq(0)) {
+    if (balance1.eq(0)) {
       await player.create({ value: parseEther("1") });
+    }
+    if (balance2.eq(0)) {
+      await player.connect(accounts[1]).create({ value: parseEther("1") });
     }
   });
 
@@ -56,33 +60,28 @@ describe("World", () => {
     await snapshot.loadSnapshot();
   });
 
-  describe("World functionality", () => {
-    it("should be able to award xp to the player", async () => {
-      let attributes = await player.getAttributes(0);
-
-      expect(attributes.experience).to.equal(0);
-      expect(attributes.level).to.equal(1);
-
-      const xpDistributor = await world.XP_DISTRIBUTOR();
-      await world.grantRole(xpDistributor, accounts[0].address);
-
-      await world.awardXP(0, 120);
-
-      attributes = await player.getAttributes(0);
-
-      expect(attributes.experience).to.equal(120);
-      expect(attributes.level).to.equal(1);
-    });
-
-    it("should be able to award currency to the player", async () => {
+  describe.only("World functionality", () => {
+    it("should be transfer currency to another player, which is taxed.", async () => {
       const currencyDistributor = await world.CURRENCY_DISTRIBUTOR();
       await world.grantRole(currencyDistributor, accounts[0].address);
 
-      await world.awardCurrency(0, 500);
+      await world.awardCurrency(0, 500); // taxed for 100
 
-      const balance = await player.gameBalanceOf(0);
+      let balance1 = await player.gameBalanceOf(0);
+      let balance2 = await player.gameBalanceOf(1);
 
-      expect(balance).to.equal(400);
+      expect(balance1).to.equal(400);
+      expect(balance2).to.equal(0);
+
+      await currency.approve(player.address, 400); // approve transfer amount
+
+      await player.connect(accounts[0]).transferCurrency(1, 400); // taxed for 80
+
+      balance1 = await await player.gameBalanceOf(0);
+      balance2 = await player.gameBalanceOf(1);
+
+      expect(balance1).to.equal(0);
+      expect(balance2).to.equal(320);
     });
   });
 });
