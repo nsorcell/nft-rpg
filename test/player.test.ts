@@ -102,7 +102,7 @@ describe("Player", () => {
     });
   });
 
-  describe.only("travel & arrive", () => {
+  describe("travel & arrive", () => {
     it("should be able to initiate travel", async () => {
       await expect(player.travel(0, [1000, 2250])).to.emit(
         player,
