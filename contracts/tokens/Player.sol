@@ -77,7 +77,8 @@ contract Player is IPlayer, ERC721 {
             0,
             ClassLibrary.PrimaryClass.None,
             ClassLibrary.SecondaryClass.None,
-            location
+            location,
+            true
         );
 
         _safeMint(msg.sender, tokenId);
@@ -88,6 +89,14 @@ contract Player is IPlayer, ERC721 {
 
         _tokenIdCounter.increment();
         emit Player_PlayerCreated(tokenId);
+    }
+
+    function die(uint256 player) external {
+        if (msg.sender != address(i_world)) {
+            revert Unauthorized();
+        }
+
+        s_attributes[player].isAlive = false;
     }
 
     function firstClassTransfer(

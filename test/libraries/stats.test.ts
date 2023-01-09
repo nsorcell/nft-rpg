@@ -1,6 +1,7 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import "@nomiclabs/hardhat-ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { expect } from "chai";
 import { deployments, ethers } from "hardhat";
 import {
   Player,
@@ -17,6 +18,9 @@ import {
   SecondaryClass,
   StatsInput,
 } from "../../utils/player-utils";
+
+type PrimaryClassName = keyof typeof PrimaryClass;
+type SecondaryClassName = keyof typeof SecondaryClass;
 
 const getClassStatsWithDistribution = (
   level: number,
@@ -53,9 +57,28 @@ const getClassStatsWithDistribution = (
     primaryClass,
     secondaryClass,
     location: { x: 0, y: 0 },
+    isAlive: true,
   };
 
   return { stats, attributes };
+};
+
+type CharacterParams = {
+  health: string;
+  pAtk: string;
+  mAtk: string;
+  pDef: string;
+  mDef: string;
+  pCritP: string;
+  mCritP: string;
+  stats: {
+    constitution: number;
+    strength: number;
+    dexterity: number;
+    intelligence: number;
+    wit: number;
+    luck: number;
+  };
 };
 
 const generateStatsFor = async (statsLib: StatsLibrary, level: number) =>
@@ -120,14 +143,17 @@ const generateStatsFor = async (statsLib: StatsLibrary, level: number) =>
         }
       )
     )
-  ).reduce((acc, { className, ...rest }) => {
-    return {
-      ...acc,
-      [className]: {
-        ...rest,
-      },
-    };
-  }, {});
+  ).reduce<Record<SecondaryClassName, CharacterParams>>(
+    (acc, { className, ...rest }) => {
+      return {
+        ...acc,
+        [className]: {
+          ...rest,
+        },
+      };
+    },
+    {} as Record<SecondaryClassName, CharacterParams>
+  );
 
 describe("StatsLibrary", () => {
   let provider: JsonRpcProvider,
@@ -136,8 +162,6 @@ describe("StatsLibrary", () => {
     player: Player;
 
   before(async () => {
-    // await deployments.fixture("all");
-
     accounts = await ethers.getSigners();
 
     provider = new ethers.providers.JsonRpcBatchProvider(
@@ -156,7 +180,9 @@ describe("StatsLibrary", () => {
 
   describe("calculatePhysicalDamage", () => {
     it("should return the calculated physical damage", async () => {
-      // TODO: check all the damages on different levels
+      const result = await generateStatsFor(statsLib, 1);
+
+      expect(result.Reaper.pAtk).to.equal("182");
     });
   });
 });

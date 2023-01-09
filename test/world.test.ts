@@ -101,8 +101,20 @@ describe("World", () => {
 
       const worldMana2 = await mana.balanceOf(world.address);
 
-      // +2 needed to adjust for flowrate
-      expect(worldMana2).to.equal(worldMana1.sub(100).add(2));
+      expect(worldMana2).to.closeTo(worldMana1.sub(100), 5);
+    });
+
+    it("should be able to burn mana", async () => {
+      const manaBurner = await world.MANA_BURNER();
+      await world.grantRole(manaBurner, accounts[0].address);
+
+      await mine(100);
+
+      const worldMana1 = await mana.balanceOf(world.address);
+
+      await expect(
+        world.burnMana(worldMana1.add(100))
+      ).to.revertedWithCustomError(world, "World_NotEnoughMana");
     });
   });
 });

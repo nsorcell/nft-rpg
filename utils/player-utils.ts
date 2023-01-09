@@ -77,6 +77,7 @@ export type AttributesInput = {
   primaryClass: PrimaryClass;
   secondaryClass: SecondaryClass;
   location: LocationInput;
+  isAlive: true;
 };
 
 export const createStatsArray = (from: StatsInput) => [
@@ -95,4 +96,5 @@ export const createAttributesArray = (from: AttributesInput) => [
   from.secondaryClass,
   from.location.x,
   from.location.y,
+  from.isAlive ? 1 : 0,
 ];

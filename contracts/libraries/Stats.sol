@@ -33,6 +33,7 @@ library StatsLibrary {
         ClassLibrary.PrimaryClass primaryClass;
         ClassLibrary.SecondaryClass secondaryClass;
         Location location;
+        bool isAlive;
     }
 
     function calculateXPForNextLevel(
@@ -95,7 +96,7 @@ library StatsLibrary {
 
     function calculatePhysicalDamage(
         uint256[6] calldata stats,
-        uint[6] calldata attributes
+        uint[7] calldata attributes
     ) external pure returns (uint256) {
         Attributes memory attributesStruct = attributesArrToStruct(attributes);
 
@@ -130,7 +131,7 @@ library StatsLibrary {
 
     function calculateMagicDamage(
         uint256[6] calldata stats,
-        uint[6] calldata attributes
+        uint[7] calldata attributes
     ) external pure returns (uint256) {
         Attributes memory attributesStruct = attributesArrToStruct(attributes);
 
@@ -192,7 +193,7 @@ library StatsLibrary {
 
     function calculatePhysicalCritChance(
         uint256[6] calldata stats,
-        uint[6] calldata attributes
+        uint[7] calldata attributes
     ) public pure returns (uint256) {
         Attributes memory attributesStruct = attributesArrToStruct(attributes);
 
@@ -231,7 +232,7 @@ library StatsLibrary {
 
     function calculateMagicCritChance(
         uint256[6] calldata stats,
-        uint[6] calldata attributes
+        uint[7] calldata attributes
     ) public pure returns (uint256) {
         Attributes memory attributesStruct = attributesArrToStruct(attributes);
 
@@ -253,7 +254,7 @@ library StatsLibrary {
     }
 
     function attributesArrToStruct(
-        uint[6] calldata attributes
+        uint[7] calldata attributes
     ) public pure returns (Attributes memory) {
         Location memory location = Location(attributes[4], attributes[5]);
 
@@ -263,7 +264,8 @@ library StatsLibrary {
                 attributes[1],
                 ClassLibrary.PrimaryClass(attributes[2]),
                 ClassLibrary.SecondaryClass(attributes[3]),
-                location
+                location,
+                attributes[6] == 1 ? true : false
             );
     }
 }
