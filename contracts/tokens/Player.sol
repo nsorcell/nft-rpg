@@ -32,11 +32,19 @@ contract Player is IPlayer, ERC721 {
 
     mapping(uint256 => uint256[6]) s_stats;
     mapping(uint256 => StatsLibrary.Attributes) s_attributes;
+    mapping(uint256 => StatsLibrary.Travel) s_travel;
     mapping(address => uint256) s_tokenOwners;
 
     modifier onlyOwnerOf(uint256 player) {
         if (msg.sender != ownerOf(player)) {
             revert Player_OnlyAllowedForOwnerOf(player);
+        }
+        _;
+    }
+
+    modifier notAllowedWhileTraveling(uint256 player) {
+        if (s_travel[player].isTraveling) {
+            revert Player_NotAllowedWhileTraveling();
         }
         _;
     }
@@ -97,6 +105,68 @@ contract Player is IPlayer, ERC721 {
         }
 
         s_attributes[player].isAlive = false;
+    }
+
+    function travel(
+        uint256 player,
+        uint256[2] memory to
+    ) external onlyOwnerOf(player) {
+        if (s_travel[player].isTraveling) {
+            revert Player_AlreadyTraveling();
+        }
+
+        s_travel[player].isTraveling = true;
+        StatsLibrary.Location memory location = s_attributes[player].location;
+        StatsLibrary.Location memory destination = StatsLibrary.Location(
+            to[0],
+            to[1]
+        );
+
+        uint256 speed = StatsLibrary.calculateSpeed(s_stats[player]);
+        uint256 dX = location.x > destination.x ? location.x : destination.x;
+        uint256 dY = location.y > destination.y ? location.x : destination.x;
+
+        uint256 distance = StatsLibrary.sqrt((dX ** 2) + (dY ** 2));
+        uint256 arrival = block.timestamp + distance / speed;
+
+        s_travel[player].arrival = arrival;
+        s_travel[player].destination = destination;
+
+        emit Player_StartedTraveling(
+            player,
+            arrival,
+            destination.x,
+            destination.y
+        );
+    }
+
+    function arrive(uint256 player) public onlyOwnerOf(player) {
+        StatsLibrary.Travel memory travelData = s_travel[player];
+
+        if (!travelData.isTraveling) {
+            revert Player_NotTraveling();
+        }
+
+        if (block.timestamp < travelData.arrival) {
+            revert Player_TravelNotFinished(
+                travelData.arrival - block.timestamp
+            );
+        }
+
+        s_attributes[player].location = travelData.destination;
+
+        emit Player_FinishedTraveling(
+            player,
+            travelData.arrival,
+            travelData.destination.x,
+            travelData.destination.y
+        );
+
+        travelData.arrival = 0;
+        travelData.destination = StatsLibrary.Location(0, 0);
+        travelData.isTraveling = false;
+
+        s_travel[player] = travelData;
     }
 
     function firstClassTransfer(
@@ -209,6 +279,12 @@ contract Player is IPlayer, ERC721 {
         uint256 player
     ) public view returns (StatsLibrary.Attributes memory) {
         return s_attributes[player];
+    }
+
+    function getTravelInfo(
+        uint256 player
+    ) public view returns (StatsLibrary.Travel memory) {
+        return s_travel[player];
     }
 
     function getPlayerOf(address account) public view returns (uint256) {

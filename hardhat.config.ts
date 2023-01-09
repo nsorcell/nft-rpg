@@ -32,7 +32,6 @@ const config: HardhatUserConfig = {
       forking: {
         url: `${GOERLI_RPC_URL}`,
       },
-      allowUnlimitedContractSize: true,
     },
     mumbai: {
       url: MUMBAI_RPC_URL,
@@ -53,6 +52,12 @@ const config: HardhatUserConfig = {
       { version: "0.8.16" },
       { version: "0.8.14" },
     ],
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 1000,
+      },
+    },
   },
   namedAccounts: {
     deployer: {

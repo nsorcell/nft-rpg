@@ -178,11 +178,13 @@ describe("StatsLibrary", () => {
     player = Player__factory.connect(playerDeployment.address, accounts[0]);
   });
 
-  describe("calculatePhysicalDamage", () => {
-    it("should return the calculated physical damage", async () => {
-      const result = await generateStatsFor(statsLib, 1);
+  describe("lvl1", () => {
+    describe("calculatePhysicalDamage", () => {
+      it("should return the calculated physical damage", async () => {
+        const result = await generateStatsFor(statsLib, 1);
 
-      expect(result.Reaper.pAtk).to.equal("182");
+        expect(result.Reaper.pAtk).to.equal("182");
+      });
     });
   });
 });

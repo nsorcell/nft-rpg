@@ -12,6 +12,10 @@ error Player_NotEligibleForClassTransfer();
 error Player_InvalidClassOption(uint256[3] validOptions);
 error Player_OnlyAllowedForOwnerOf(uint256 player);
 error Player_PaymentValueInvalid();
+error Player_AlreadyTraveling();
+error Player_NotTraveling();
+error Player_TravelNotFinished(uint256 remaining);
+error Player_NotAllowedWhileTraveling();
 
 // Guild
 error Guild_AlreadyInRole();

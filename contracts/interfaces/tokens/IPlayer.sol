@@ -17,4 +17,16 @@ interface IPlayer {
     );
 
     event Player_XPReceived(uint256 indexed playerId, uint256 amount);
+    event Player_StartedTraveling(
+        uint256 indexed playerId,
+        uint256 indexed arrival,
+        uint256 dx,
+        uint256 dy
+    );
+    event Player_FinishedTraveling(
+        uint256 indexed playerId,
+        uint256 indexed arrival,
+        uint256 dx,
+        uint256 dy
+    );
 }

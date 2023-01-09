@@ -22,9 +22,20 @@ library StatsLibrary {
         uint256 luck;
     }
 
+    struct Equipment {
+        uint256 armor;
+        uint256 weapon;
+    }
+
     struct Location {
         uint256 x;
         uint256 y;
+    }
+
+    struct Travel {
+        bool isTraveling;
+        uint256 arrival;
+        Location destination;
     }
 
     struct Attributes {
@@ -66,6 +77,15 @@ library StatsLibrary {
             6 +
             luck *
             4;
+    }
+
+    function calculateSpeed(
+        uint[6] calldata stats
+    ) public pure returns (uint256) {
+        uint256 dexterity = stats[uint256(Stats.DEXTERITY)];
+        uint256 constitution = stats[uint256(Stats.CONSTITUTION)];
+
+        return dexterity + constitution / 2;
     }
 
     function calculatePhysicalDamage(
@@ -267,5 +287,18 @@ library StatsLibrary {
                 location,
                 attributes[6] == 1 ? true : false
             );
+    }
+
+    function sqrt(uint y) public pure returns (uint z) {
+        if (y > 3) {
+            z = y;
+            uint x = y / 2 + 1;
+            while (x < z) {
+                z = x;
+                x = (y / x + x) / 2;
+            }
+        } else if (y != 0) {
+            z = 1;
+        }
     }
 }

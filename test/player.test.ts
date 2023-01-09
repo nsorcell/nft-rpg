@@ -1,4 +1,5 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
+import { mine } from "@nomicfoundation/hardhat-network-helpers";
 import "@nomiclabs/hardhat-ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Framework } from "@superfluid-finance/sdk-core";
@@ -58,12 +59,14 @@ describe("Player", () => {
     await snapshot.loadSnapshot();
   });
 
-  describe("Player functionality", () => {
+  describe("Player basic functionality", () => {
     it("should be able to create one player", async () => {
       expect(await player.getPlayerOf(accounts[0].address)).to.equal(0);
       expect(await player.ownerOf(0)).to.equal(accounts[0].address);
     });
+  });
 
+  describe("levelUp", () => {
     it("should be able to level up the player", async () => {
       let stats = await player.getStats(0);
       let attributes = await player.getAttributes(0);
@@ -96,6 +99,105 @@ describe("Player", () => {
 
       expect(attributes.experience).to.equal(8);
       expect(attributes.level).to.equal(2);
+    });
+  });
+
+  describe.only("travel & arrive", () => {
+    it("should be able to initiate travel", async () => {
+      await expect(player.travel(0, [1000, 2250])).to.emit(
+        player,
+        "Player_StartedTraveling"
+      );
+
+      let travelInfo = await player.getTravelInfo(0);
+      let block = await provider.getBlock("latest");
+
+      expect(travelInfo.isTraveling).to.be.true;
+      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(157);
+
+      await mine(100);
+
+      travelInfo = await player.getTravelInfo(0);
+      block = await provider.getBlock("latest");
+
+      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(57);
+    });
+
+    it("should not allow to travel, when already traveling", async () => {
+      await expect(player.travel(0, [1000, 2250])).to.emit(
+        player,
+        "Player_StartedTraveling"
+      );
+
+      await expect(player.travel(0, [1000, 2250])).to.revertedWithCustomError(
+        player,
+        "Player_AlreadyTraveling"
+      );
+    });
+
+    it("should not allow to arrive, when not traveling", async () => {
+      await expect(player.arrive(0)).to.revertedWithCustomError(
+        player,
+        "Player_NotTraveling"
+      );
+    });
+
+    it("should not be able to arrive when travel is not finished", async () => {
+      await expect(player.travel(0, [1000, 2250])).to.emit(
+        player,
+        "Player_StartedTraveling"
+      );
+
+      let travelInfo = await player.getTravelInfo(0);
+      let block = await provider.getBlock("latest");
+
+      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(157);
+
+      await mine(100);
+
+      travelInfo = await player.getTravelInfo(0);
+      block = await provider.getBlock("latest");
+
+      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(57);
+
+      await expect(player.arrive(0)).to.revertedWithCustomError(
+        player,
+        "Player_TravelNotFinished"
+      );
+
+      travelInfo = await player.getTravelInfo(0);
+      block = await provider.getBlock("latest");
+
+      expect(travelInfo.isTraveling).to.be.true;
+    });
+
+    it("should be able to arrive when travel is finished", async () => {
+      await expect(player.travel(0, [1000, 2250])).to.emit(
+        player,
+        "Player_StartedTraveling"
+      );
+
+      let travelInfo = await player.getTravelInfo(0);
+      let block = await provider.getBlock("latest");
+
+      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(157);
+
+      await mine(157);
+
+      travelInfo = await player.getTravelInfo(0);
+      block = await provider.getBlock("latest");
+
+      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(0);
+
+      await expect(player.arrive(0)).to.emit(
+        player,
+        "Player_FinishedTraveling"
+      );
+
+      travelInfo = await player.getTravelInfo(0);
+      block = await provider.getBlock("latest");
+
+      expect(travelInfo.isTraveling).to.be.false;
     });
   });
 });
