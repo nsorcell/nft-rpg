@@ -1,4 +1,4 @@
-name: hardhat-mocha test
+name: hardhat-mocha-test
 
 on:
   push:
