@@ -73,7 +73,9 @@ contract Guild is IGuild, AccessControl {
             revert Unauthorized();
         }
 
-        if (!s_recruitmentRequests.contains(candidate)) {
+        (bool found, uint256 index) = s_recruitmentRequests.indexOf(candidate);
+
+        if (!found) {
             revert Guild_CandidateNotFound();
         }
 
@@ -85,11 +87,7 @@ contract Guild is IGuild, AccessControl {
             revert Guild_AlreadyMemberOfAnotherGuild(guild);
         }
 
-        (bool found, uint256 index) = s_recruitmentRequests.indexOf(candidate);
-
-        if (found) {
-            s_recruitmentRequests.remove(index);
-        }
+        s_recruitmentRequests.remove(index);
 
         _setupRole(MEMBER, candidate);
         s_memberList.push(candidate);

@@ -4,6 +4,7 @@ coverage
 coverage.json
 types
 .DS_Store
+gas-report.txt
 
 
 # Hardhat files
