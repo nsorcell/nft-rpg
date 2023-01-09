@@ -77,7 +77,7 @@ describe("Currency", () => {
 
       await player.connect(accounts[0]).transferCurrency(1, 400); // taxed for 80
 
-      balance1 = await await player.gameBalanceOf(0);
+      balance1 = await player.gameBalanceOf(0);
       balance2 = await player.gameBalanceOf(1);
 
       expect(balance1).to.equal(0);

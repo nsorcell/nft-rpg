@@ -11,6 +11,7 @@ import {Currency} from "./tokens/Currency.sol";
 import "./libraries/Errors.sol";
 
 contract World is IWorld, AccessControl {
+    uint256 public constant WORLD_SIZE = 100_000;
     int96 public constant MANA_FLOW_PER_PLAYER = 1;
 
     bytes32 public constant CURRENCY_DISTRIBUTOR =

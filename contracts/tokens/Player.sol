@@ -123,8 +123,12 @@ contract Player is IPlayer, ERC721 {
         );
 
         uint256 speed = StatsLibrary.calculateSpeed(s_stats[player]);
-        uint256 dX = location.x > destination.x ? location.x : destination.x;
-        uint256 dY = location.y > destination.y ? location.x : destination.x;
+        uint256 dX = location.x > destination.x
+            ? location.x - destination.x
+            : destination.x - location.x;
+        uint256 dY = location.y > destination.y
+            ? location.y - destination.y
+            : destination.y - location.y;
 
         uint256 distance = StatsLibrary.sqrt((dX ** 2) + (dY ** 2));
         uint256 arrival = block.timestamp + distance / speed;
