@@ -53,6 +53,7 @@ const getClassStatsWithDistribution = (
 
   const attributes: AttributesInput = {
     level,
+    health: 100,
     experience: 0,
     primaryClass,
     secondaryClass,
@@ -112,11 +113,13 @@ const generateStatsFor = async (statsLib: StatsLibrary, level: number) =>
           );
 
           const pDef = await statsLib.calculatePhysicalDefense(
-            createStatsArray(stats)
+            createStatsArray(stats),
+            createAttributesArray(attributes)
           );
 
           const mDef = await statsLib.calculateMagicDefense(
-            createStatsArray(stats)
+            createStatsArray(stats),
+            createAttributesArray(attributes)
           );
 
           const pCritP = await statsLib.calculatePhysicalCritChance(

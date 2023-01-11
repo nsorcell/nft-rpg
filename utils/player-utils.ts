@@ -73,6 +73,7 @@ export const classCombinations: [
 
 export type AttributesInput = {
   level: number;
+  health: number;
   experience: number;
   primaryClass: PrimaryClass;
   secondaryClass: SecondaryClass;

@@ -68,16 +68,14 @@ describe("Player", () => {
 
   describe("levelUp", () => {
     it("should be able to level up the player", async () => {
-      let stats = await player.getStats(0);
       let attributes = await player.getAttributes(0);
 
-      expect(stats.strength).to.equal(6);
-      expect(stats.dexterity).to.equal(6);
-      expect(stats.constitution).to.equal(6);
-      expect(stats.intellect).to.equal(6);
-      expect(stats.wit).to.equal(6);
-      expect(stats.luck).to.equal(6);
-
+      expect(attributes.stats[0]).to.equal(6);
+      expect(attributes.stats[1]).to.equal(6);
+      expect(attributes.stats[2]).to.equal(6);
+      expect(attributes.stats[3]).to.equal(6);
+      expect(attributes.stats[4]).to.equal(6);
+      expect(attributes.stats[5]).to.equal(6);
       expect(attributes.level).to.equal(1);
 
       const xpDistributor = await world.XP_DISTRIBUTOR();
@@ -87,15 +85,14 @@ describe("Player", () => {
 
       await player.levelUp(0, [2, 1, 0, 0, 0, 0]);
 
-      stats = await player.getStats(0);
       attributes = await player.getAttributes(0);
 
-      expect(stats.strength).to.equal(8);
-      expect(stats.dexterity).to.equal(7);
-      expect(stats.constitution).to.equal(6);
-      expect(stats.intellect).to.equal(6);
-      expect(stats.wit).to.equal(6);
-      expect(stats.luck).to.equal(6);
+      expect(attributes.stats[0]).to.equal(8);
+      expect(attributes.stats[1]).to.equal(7);
+      expect(attributes.stats[2]).to.equal(6);
+      expect(attributes.stats[3]).to.equal(6);
+      expect(attributes.stats[4]).to.equal(6);
+      expect(attributes.stats[5]).to.equal(6);
 
       expect(attributes.experience).to.equal(8);
       expect(attributes.level).to.equal(2);
@@ -113,14 +110,14 @@ describe("Player", () => {
       let block = await provider.getBlock("latest");
 
       expect(travelInfo.isTraveling).to.be.true;
-      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(157);
+      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(273);
 
       await mine(100);
 
       travelInfo = await player.getTravelInfo(0);
       block = await provider.getBlock("latest");
 
-      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(57);
+      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(173);
     });
 
     it("should not allow to travel, when already traveling", async () => {
@@ -151,14 +148,14 @@ describe("Player", () => {
       let travelInfo = await player.getTravelInfo(0);
       let block = await provider.getBlock("latest");
 
-      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(157);
+      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(273);
 
       await mine(100);
 
       travelInfo = await player.getTravelInfo(0);
       block = await provider.getBlock("latest");
 
-      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(57);
+      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(173);
 
       await expect(player.arrive(0)).to.revertedWithCustomError(
         player,
@@ -172,7 +169,7 @@ describe("Player", () => {
     });
 
     it("should be able to arrive when travel is finished", async () => {
-      await expect(player.travel(0, [1000, 2250])).to.emit(
+      await expect(player.travel(0, [1000, 100])).to.emit(
         player,
         "Player_StartedTraveling"
       );
@@ -180,9 +177,9 @@ describe("Player", () => {
       let travelInfo = await player.getTravelInfo(0);
       let block = await provider.getBlock("latest");
 
-      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(157);
+      expect(travelInfo.arrival.sub(block.timestamp)).to.equal(111);
 
-      await mine(157);
+      await mine(111);
 
       travelInfo = await player.getTravelInfo(0);
       block = await provider.getBlock("latest");

@@ -30,7 +30,6 @@ contract Player is IPlayer, ERC721 {
 
     uint256 private i_price;
 
-    mapping(uint256 => uint256[6]) s_stats;
     mapping(uint256 => StatsLibrary.Attributes) s_attributes;
     mapping(uint256 => StatsLibrary.Travel) s_travel;
     mapping(address => uint256) s_tokenOwners;
@@ -69,7 +68,7 @@ contract Player is IPlayer, ERC721 {
         }
 
         uint256 tokenId = _tokenIdCounter.current();
-        s_stats[tokenId] = [
+        uint[6] memory stats = [
             INITIAL_STAT_VALUE,
             INITIAL_STAT_VALUE,
             INITIAL_STAT_VALUE,
@@ -82,6 +81,7 @@ contract Player is IPlayer, ERC721 {
 
         s_attributes[tokenId] = StatsLibrary.Attributes(
             1,
+            stats,
             0,
             ClassLibrary.PrimaryClass.None,
             ClassLibrary.SecondaryClass.None,
@@ -122,7 +122,7 @@ contract Player is IPlayer, ERC721 {
             to[1]
         );
 
-        uint256 speed = StatsLibrary.calculateSpeed(s_stats[player]);
+        uint256 speed = StatsLibrary.calculateSpeed(s_attributes[player]);
         uint256 dX = location.x > destination.x
             ? location.x - destination.x
             : destination.x - location.x;
@@ -236,7 +236,7 @@ contract Player is IPlayer, ERC721 {
 
         uint256 remainingXp = attributes.experience - requiredXp;
 
-        uint256[6] memory stats = s_stats[player];
+        uint256[6] memory stats = s_attributes[player].stats;
 
         unchecked {
             for (uint256 i = 0; i < 6; i++) {
@@ -244,7 +244,7 @@ contract Player is IPlayer, ERC721 {
             }
         }
 
-        s_stats[player] = stats;
+        s_attributes[player].stats = stats;
         s_attributes[player].level++;
         s_attributes[player].experience = remainingXp;
 
@@ -271,12 +271,6 @@ contract Player is IPlayer, ERC721 {
         address owner = ownerOf(player);
 
         return i_currency.balanceOf(owner);
-    }
-
-    function getStats(
-        uint256 player
-    ) public view returns (StatsLibrary.StatsStruct memory) {
-        return StatsLibrary.statsArrToStruct(s_stats[player]);
     }
 
     function getAttributes(

@@ -40,6 +40,8 @@ library StatsLibrary {
 
     struct Attributes {
         uint256 level;
+        uint256[6] stats;
+        uint256 health;
         uint256 experience;
         ClassLibrary.PrimaryClass primaryClass;
         ClassLibrary.SecondaryClass secondaryClass;
@@ -80,16 +82,15 @@ library StatsLibrary {
     }
 
     function calculateSpeed(
-        uint[6] calldata stats
+        Attributes memory attributes
     ) public pure returns (uint256) {
-        uint256 dexterity = stats[uint256(Stats.DEXTERITY)];
-        uint256 constitution = stats[uint256(Stats.CONSTITUTION)];
+        uint256 dexterity = attributes.stats[uint256(Stats.DEXTERITY)];
+        uint256 constitution = attributes.stats[uint256(Stats.CONSTITUTION)];
 
         return dexterity + constitution / 2;
     }
 
     function calculatePhysicalDamage(
-        uint256[6] calldata stats,
         Attributes memory attributes
     ) internal pure returns (uint256) {
         Stats[2] memory markers = ClassLibrary.getMarkers(
@@ -97,11 +98,11 @@ library StatsLibrary {
             attributes.secondaryClass
         );
 
-        uint256 primaryStatValue = stats[uint256(markers[0])];
-        uint256 secondaryStatValue = stats[uint256(markers[1])];
+        uint256 primaryStatValue = attributes.stats[uint256(markers[0])];
+        uint256 secondaryStatValue = attributes.stats[uint256(markers[1])];
 
-        uint256 strength = stats[uint256(Stats.STRENGTH)];
-        uint256 dexterity = stats[uint256(Stats.DEXTERITY)];
+        uint256 strength = attributes.stats[uint256(Stats.STRENGTH)];
+        uint256 dexterity = attributes.stats[uint256(Stats.DEXTERITY)];
 
         return
             strength *
@@ -116,15 +117,17 @@ library StatsLibrary {
 
     function calculatePhysicalDamage(
         uint256[6] calldata stats,
-        uint[7] calldata attributes
+        uint[8] calldata attributes
     ) external pure returns (uint256) {
-        Attributes memory attributesStruct = attributesArrToStruct(attributes);
+        Attributes memory attributesStruct = attributesArrToStruct(
+            attributes,
+            stats
+        );
 
-        return calculatePhysicalDamage(stats, attributesStruct);
+        return calculatePhysicalDamage(attributesStruct);
     }
 
     function calculateMagicDamage(
-        uint256[6] calldata stats,
         Attributes memory attributes
     ) internal pure returns (uint256) {
         Stats[2] memory markers = ClassLibrary.getMarkers(
@@ -132,11 +135,11 @@ library StatsLibrary {
             attributes.secondaryClass
         );
 
-        uint256 primaryStatValue = stats[uint256(markers[0])];
-        uint256 secondaryStatValue = stats[uint256(markers[1])];
+        uint256 primaryStatValue = attributes.stats[uint256(markers[0])];
+        uint256 secondaryStatValue = attributes.stats[uint256(markers[1])];
 
-        uint256 intellect = stats[uint256(Stats.INTELLECT)];
-        uint256 wit = stats[uint256(Stats.WIT)];
+        uint256 intellect = attributes.stats[uint256(Stats.INTELLECT)];
+        uint256 wit = attributes.stats[uint256(Stats.WIT)];
 
         return
             intellect *
@@ -151,35 +154,61 @@ library StatsLibrary {
 
     function calculateMagicDamage(
         uint256[6] calldata stats,
-        uint[7] calldata attributes
+        uint[8] calldata attributes
     ) external pure returns (uint256) {
-        Attributes memory attributesStruct = attributesArrToStruct(attributes);
+        Attributes memory attributesStruct = attributesArrToStruct(
+            attributes,
+            stats
+        );
 
-        return calculateMagicDamage(stats, attributesStruct);
+        return calculateMagicDamage(attributesStruct);
     }
 
     function calculatePhysicalDefense(
-        uint256[6] calldata stats
-    ) public pure returns (uint256) {
-        uint256 strength = stats[uint256(Stats.STRENGTH)];
-        uint256 constitution = stats[uint256(Stats.CONSTITUTION)];
-        uint256 dexterity = stats[uint256(Stats.DEXTERITY)];
+        Attributes memory attributes
+    ) internal pure returns (uint256) {
+        uint256 strength = attributes.stats[uint256(Stats.STRENGTH)];
+        uint256 constitution = attributes.stats[uint256(Stats.CONSTITUTION)];
+        uint256 dexterity = attributes.stats[uint256(Stats.DEXTERITY)];
 
         return constitution * 8 + strength * 6 + dexterity * 4;
     }
 
+    function calculatePhysicalDefense(
+        uint256[6] calldata stats,
+        uint[8] calldata attributes
+    ) external pure returns (uint256) {
+        Attributes memory attributesStruct = attributesArrToStruct(
+            attributes,
+            stats
+        );
+
+        return calculatePhysicalDefense(attributesStruct);
+    }
+
     function calculateMagicDefense(
-        uint256[6] calldata stats
-    ) public pure returns (uint256) {
-        uint256 constitution = stats[uint256(Stats.CONSTITUTION)];
-        uint256 intellect = stats[uint256(Stats.INTELLECT)];
-        uint256 wit = stats[uint256(Stats.WIT)];
+        Attributes memory attributes
+    ) internal pure returns (uint256) {
+        uint256 constitution = attributes.stats[uint256(Stats.CONSTITUTION)];
+        uint256 intellect = attributes.stats[uint256(Stats.INTELLECT)];
+        uint256 wit = attributes.stats[uint256(Stats.WIT)];
 
         return intellect * 8 + wit * 6 + constitution * 4;
     }
 
-    function calculatePhysicalCritChance(
+    function calculateMagicDefense(
         uint256[6] calldata stats,
+        uint[8] calldata attributes
+    ) external pure returns (uint256) {
+        Attributes memory attributesStruct = attributesArrToStruct(
+            attributes,
+            stats
+        );
+
+        return calculateMagicDefense(attributesStruct);
+    }
+
+    function calculatePhysicalCritChance(
         Attributes memory attributes
     ) internal pure returns (uint256) {
         Stats[2] memory markers = ClassLibrary.getMarkers(
@@ -203,8 +232,8 @@ library StatsLibrary {
             : 0;
         uint256 luckBonus = markers[1] == Stats.LUCK ? 7 : 0;
 
-        uint256 dexterity = stats[uint256(Stats.DEXTERITY)];
-        uint256 luck = stats[uint256(Stats.LUCK)];
+        uint256 dexterity = attributes.stats[uint256(Stats.DEXTERITY)];
+        uint256 luck = attributes.stats[uint256(Stats.LUCK)];
 
         uint256 critChance = (luck / 4 + dexterity / 8) + luckBonus + dexBonus;
 
@@ -213,15 +242,17 @@ library StatsLibrary {
 
     function calculatePhysicalCritChance(
         uint256[6] calldata stats,
-        uint[7] calldata attributes
+        uint[8] calldata attributes
     ) public pure returns (uint256) {
-        Attributes memory attributesStruct = attributesArrToStruct(attributes);
+        Attributes memory attributesStruct = attributesArrToStruct(
+            attributes,
+            stats
+        );
 
-        return calculatePhysicalCritChance(stats, attributesStruct);
+        return calculatePhysicalCritChance(attributesStruct);
     }
 
     function calculateMagicCritChance(
-        uint256[6] calldata stats,
         Attributes memory attributes
     ) internal pure returns (uint256) {
         Stats[2] memory markers = ClassLibrary.getMarkers(
@@ -242,8 +273,8 @@ library StatsLibrary {
             : 0;
         uint256 luckBonus = markers[1] == Stats.LUCK ? 7 : 0;
 
-        uint256 wit = stats[uint256(Stats.WIT)];
-        uint256 luck = stats[uint256(Stats.LUCK)];
+        uint256 wit = attributes.stats[uint256(Stats.WIT)];
+        uint256 luck = attributes.stats[uint256(Stats.LUCK)];
 
         uint256 critChance = (luck / 4 + wit / 8) + luckBonus + witBonus;
 
@@ -252,40 +283,32 @@ library StatsLibrary {
 
     function calculateMagicCritChance(
         uint256[6] calldata stats,
-        uint[7] calldata attributes
+        uint[8] calldata attributes
     ) public pure returns (uint256) {
-        Attributes memory attributesStruct = attributesArrToStruct(attributes);
+        Attributes memory attributesStruct = attributesArrToStruct(
+            attributes,
+            stats
+        );
 
-        return calculateMagicCritChance(stats, attributesStruct);
-    }
-
-    function statsArrToStruct(
-        uint[6] memory stats
-    ) public pure returns (StatsStruct memory) {
-        return
-            StatsStruct(
-                stats[uint(Stats.STRENGTH)],
-                stats[uint(Stats.DEXTERITY)],
-                stats[uint(Stats.CONSTITUTION)],
-                stats[uint(Stats.INTELLECT)],
-                stats[uint(Stats.WIT)],
-                stats[uint(Stats.LUCK)]
-            );
+        return calculateMagicCritChance(attributesStruct);
     }
 
     function attributesArrToStruct(
-        uint[7] calldata attributes
+        uint[8] calldata attributes,
+        uint[6] calldata stats
     ) public pure returns (Attributes memory) {
-        Location memory location = Location(attributes[4], attributes[5]);
+        Location memory location = Location(attributes[5], attributes[6]);
 
         return
             Attributes(
                 attributes[0],
+                stats,
                 attributes[1],
-                ClassLibrary.PrimaryClass(attributes[2]),
-                ClassLibrary.SecondaryClass(attributes[3]),
+                attributes[2],
+                ClassLibrary.PrimaryClass(attributes[3]),
+                ClassLibrary.SecondaryClass(attributes[4]),
                 location,
-                attributes[6] == 1 ? true : false
+                attributes[7] == 1 ? true : false
             );
     }
 

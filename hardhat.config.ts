@@ -31,6 +31,7 @@ const config: HardhatUserConfig = {
       chainId: 5,
       forking: {
         url: `${GOERLI_RPC_URL}`,
+        blockNumber: 8293564,
       },
     },
     mumbai: {
