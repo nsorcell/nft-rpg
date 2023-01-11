@@ -8,8 +8,8 @@ import { deployments, ethers } from "hardhat";
 import { snapshot } from "../deploy/07-init-world";
 
 import {
-  IERC20Upgradeable,
-  IERC20Upgradeable__factory,
+  Currency,
+  Currency__factory,
   Player,
   Player__factory,
   World,
@@ -20,7 +20,7 @@ describe("Currency", () => {
   let provider: JsonRpcProvider,
     accounts: SignerWithAddress[],
     framework: Framework,
-    currency: IERC20Upgradeable,
+    currency: Currency,
     world: World,
     player: Player;
 
@@ -38,7 +38,7 @@ describe("Currency", () => {
 
     player = Player__factory.connect(playerDeployment.address, accounts[0]);
     world = World__factory.connect(worldDeployment.address, accounts[0]);
-    currency = IERC20Upgradeable__factory.connect(
+    currency = Currency__factory.connect(
       currencyDeployment.address,
       accounts[0]
     );
