@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "hardhat compile",
-    "ln": "hardhat node",
+    "ln": "hardhat node --watch",
     "ln:no-deploy": "hardhat node --no-deploy",
     "test": "hardhat test --network localhost --no-compile  --verbose"
   },

@@ -82,6 +82,7 @@ contract Player is IPlayer, ERC721 {
         s_attributes[tokenId] = StatsLibrary.Attributes(
             1,
             stats,
+            StatsLibrary.calculateHealth(stats),
             0,
             ClassLibrary.PrimaryClass.None,
             ClassLibrary.SecondaryClass.None,
