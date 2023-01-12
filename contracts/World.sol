@@ -10,6 +10,8 @@ import {IWorld} from "./interfaces/IWorld.sol";
 import {Currency} from "./tokens/Currency.sol";
 import "./libraries/Errors.sol";
 
+import "./map/Perlin.sol";
+
 contract World is IWorld, AccessControl {
     uint256 public constant WORLD_SIZE = 100_000;
     int96 public constant MANA_FLOW_PER_PLAYER = 1;
@@ -104,5 +106,22 @@ contract World is IWorld, AccessControl {
         s_currency.mint(address(this), amount);
 
         emit World_CurrencyMinted(amount);
+    }
+
+    uint256 public seed = 123;
+    uint256 public worldScale = 10;
+
+    function getHeight(int32 x, int32 y) public view returns (uint256, uint256) {
+        uint32 _x = uint32(int32(int64(x) + int64(type(int32).max)));
+        uint32 _y = uint32(int32(int64(y) + int64(type(int32).max)));
+
+        uint256 perlin1 = Perlin.computePerlin(
+            _x,
+            _y,
+            uint32(seed),
+            uint32(worldScale)
+        );
+
+        return (perlin1, worldScale);
     }
 }

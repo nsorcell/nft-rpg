@@ -16,11 +16,30 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   log(`Deploying ${CONTRACT} and waiting for confirmations...`);
 
+
+  const abdk = await deploy("ABDKMath64x64", {
+    from: deployer,
+    log: true,
+    args: []
+  });
+
+  const perlin = await deploy("Perlin", {
+    from: deployer,
+    log: true,
+    args: [],
+    libraries: {
+      ABDKMath64x64: abdk.address
+    }
+  });
+
   const world = await deploy(CONTRACT, {
     from: deployer,
     args,
     log: true,
     waitConfirmations: developmentChains.includes(network.name) ? 1 : 5,
+    libraries: {
+      Perlin: perlin.address
+    }
   });
 
   log(`${CONTRACT} deployed at ${world.address}`);

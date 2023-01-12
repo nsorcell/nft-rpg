@@ -5,6 +5,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { SuperToken } from "@superfluid-finance/ethereum-contracts/build/typechain";
 import { Framework, SuperToken__factory } from "@superfluid-finance/sdk-core";
 import { expect } from "chai";
+import { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils";
 import { deployments, ethers } from "hardhat";
 import { snapshot } from "../deploy/07-init-world";
@@ -115,6 +116,67 @@ describe("World", () => {
       await expect(
         world.burnMana(worldMana1.add(100))
       ).to.revertedWithCustomError(world, "World_NotEnoughMana");
+    });
+
+    const END = 2147483647;
+    const START = -1000 ///-END + Math.round(END / 2) + Math.round(END / 4);
+
+    it('should generate perlin', async () => {
+
+      let height
+      let i = 0;
+      do {
+
+        try {
+          height = await world.getHeight(START - i, START - i)
+
+          console.log(height, i);
+        } catch (err) {
+          i++;
+        }
+
+      } while (!height)
+
+
+    });
+
+    it.only('should generate perlin matrix', async () => {
+      const tasks: Array<Promise<{ x: number, y: number, i: number, j: number, h: number }>> = []
+
+      for (let i = 0; i < 15; i++) {
+        tasks.push()
+
+        for (let j = 0; j < 15; j++) {
+          const x = START + i
+          const y = START + j
+
+          tasks.push(world.getHeight(x, y).then(([h]) => ({
+            i,
+            j,
+            h: h.toNumber(),
+            x,
+            y
+          })));
+        }
+      }
+
+      const result = await Promise.all(tasks)
+
+      console.log(START);
+
+      const asd = result.reduce((acc, curr) => {
+        if (acc.length - 1 < curr.i) {
+          acc.push([]);
+        }
+
+        acc[curr.i][curr.j] = curr.h
+
+        return acc
+      }, [] as number[][]);
+
+      console.table(asd);
+      console.log('min', Math.min(...result.map(r => r.h)), 'max',Math.max(...result.map(r => r.h)) )
+
     });
   });
 });
