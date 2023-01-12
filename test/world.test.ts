@@ -121,7 +121,7 @@ describe("World", () => {
     const END = 2147483647;
     const START = -1000 ///-END + Math.round(END / 2) + Math.round(END / 4);
 
-    it('should generate perlin', async () => {
+    it.only('should generate perlin', async () => {
 
       let height
       let i = 0;
@@ -136,26 +136,25 @@ describe("World", () => {
         }
 
       } while (!height)
-
-
     });
 
-    it.only('should generate perlin matrix', async () => {
+    it('should generate perlin matrix', async () => {
       const tasks: Array<Promise<{ x: number, y: number, i: number, j: number, h: number }>> = []
 
-      for (let i = 0; i < 15; i++) {
-        tasks.push()
-
-        for (let j = 0; j < 15; j++) {
+      for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
           const x = START + i
           const y = START + j
 
-          tasks.push(world.getHeight(x, y).then(([h]) => ({
+          tasks.push(world.getHeight(x, y).then(([h, scale, {q, r, s}]) => ({
             i,
             j,
             h: h.toNumber(),
             x,
-            y
+            y,
+            q,
+            r,
+            s
           })));
         }
       }

@@ -11,6 +11,7 @@ import {Currency} from "./tokens/Currency.sol";
 import "./libraries/Errors.sol";
 
 import "./map/Perlin.sol";
+import "./libraries/Hex.sol";
 
 contract World is IWorld, AccessControl {
     uint256 public constant WORLD_SIZE = 100_000;
@@ -108,10 +109,17 @@ contract World is IWorld, AccessControl {
         emit World_CurrencyMinted(amount);
     }
 
+    using HexUtils for Hex;
+
+    struct Tile {
+        Hex position;
+        uint256 height;
+    }
+
     uint256 public seed = 123;
     uint256 public worldScale = 10;
 
-    function getHeight(int32 x, int32 y) public view returns (uint256, uint256) {
+    function getHeight(int32 x, int32 y) public view returns (uint256, uint256, Hex memory) {
         uint32 _x = uint32(int32(int64(x) + int64(type(int32).max)));
         uint32 _y = uint32(int32(int64(y) + int64(type(int32).max)));
 
@@ -122,6 +130,6 @@ contract World is IWorld, AccessControl {
             uint32(worldScale)
         );
 
-        return (perlin1, worldScale);
+        return (perlin1, worldScale, HexUtils.fromAxial(x, y));
     }
 }
