@@ -14,7 +14,7 @@ contract ERC721Linked is ERC721 {
         string memory symbol
     ) ERC721(name, symbol) {}
 
-    function _safeMint(address parentNFT, uint256 parentId) internal override {
+    function mint(address parentNFT, uint256 parentId) external {
         uint256 tokenId = _tokenIdCounter.current();
 
         bytes memory owner = abi.encodePacked(

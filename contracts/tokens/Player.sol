@@ -16,6 +16,7 @@ contract Player is IPlayer, ERC721 {
     using Counters for Counters.Counter;
     using UintArrayUtils for uint256[6];
     using UintArrayUtils for uint256[3];
+    using UintArrayUtils for uint256[];
 
     using SafeMath for uint256;
 
@@ -274,6 +275,13 @@ contract Player is IPlayer, ERC721 {
         return i_currency.balanceOf(owner);
     }
 
+    function setAttributes(
+        uint256 player,
+        StatsLibrary.Attributes memory attributes
+    ) external {
+        s_attributes[player] = attributes;
+    }
+
     function getAttributes(
         uint256 player
     ) public view returns (StatsLibrary.Attributes memory) {
@@ -286,7 +294,13 @@ contract Player is IPlayer, ERC721 {
         return s_travel[player];
     }
 
-    function getPlayerOf(address account) public view returns (uint256) {
-        return s_tokenOwners[account];
+    function getPlayerOf(address account) public view returns (bool, uint256) {
+        uint256 player = s_tokenOwners[account];
+
+        if (ownerOf(player) == account) {
+            return (true, s_tokenOwners[account]);
+        }
+
+        return (false, 0);
     }
 }

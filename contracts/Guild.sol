@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPLv3
 pragma solidity 0.8.16;
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {Player} from "./tokens/Player.sol";
 import {IGuild} from "./interfaces/IGuild.sol";
 import {AddressArrayUtils} from "./libraries/ArrayUtils.sol";
 import {GuildRegistry} from "./GuildRegistry.sol";

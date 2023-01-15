@@ -52,6 +52,24 @@ library StringArrayUtils {
             return false;
         }
     }
+
+    function indexOf(
+        string[] memory array,
+        string memory str
+    ) public pure returns (bool, uint256) {
+        unchecked {
+            for (uint256 i = 0; i < array.length; ) {
+                if (
+                    keccak256(abi.encodePacked(array[i++])) ==
+                    keccak256(abi.encodePacked(str))
+                ) {
+                    return (true, i);
+                }
+            }
+
+            return (false, 0);
+        }
+    }
 }
 
 library UintArrayUtils {
