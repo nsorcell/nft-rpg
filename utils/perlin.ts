@@ -149,16 +149,12 @@ export function computePerlin(
     perlin = perlin.add(getSingleScalePerlin(x, y, scale * (2 ** i), seed));
   }
 
-  perlin = perlin.add(getSingleScalePerlin(x, y, scale * scale, seed).mul(3));
+  perlin = perlin.add(getSingleScalePerlin(x, y, scale * scale, seed).mul(2));
 
-  perlin = perlin.minus(0.5).mul(2).abs();
+  // perlin = perlin.minus(0.5).mul(2).abs().inverseSine();
 
   // Take the average
   perlin = perlin.div(rounds + 1).mul(50).add(50);
-
-
-
-  console.log(perlin.toNumber())
 
   return perlin.floor().toNumber();
 
