@@ -2,6 +2,7 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import "@nomiclabs/hardhat-ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Framework } from "@superfluid-finance/sdk-core";
+import { expect } from "chai";
 import { parseEther } from "ethers/lib/utils";
 import { deployments, ethers } from "hardhat";
 import { snapshot } from "../deploy/10-init-world";
@@ -53,9 +54,13 @@ describe("Spells", () => {
     await snapshot.loadSnapshot();
   });
 
-  describe("Casting spells", () => {
-    it.only("should be able to cast a spell", async () => {
+  describe.only("Casting spells", () => {
+    it("should be able to cast a spell", async () => {
       await spell.cast(0, 0, [0], 1);
+    });
+
+    it("should not be able to cast a spell if the level requirement is not met.", async () => {
+      await expect(spell.cast(1, 0, [0], 1)).to.be.reverted;
     });
   });
 });

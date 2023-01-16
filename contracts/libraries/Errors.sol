@@ -37,6 +37,9 @@ error GuildRegistry_GuildDoesntExist();
 error GuildRegistry_GuildAlreadyExists();
 error GuildRegistry_GuildAlreadyRegistered();
 
+// Spells
+error Spells_LevelNotHighEnough(uint256 requiredLevel);
+
 // ManaReserve
 error ManaReserve_WorldNotConnected();
 

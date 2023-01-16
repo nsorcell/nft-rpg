@@ -11,20 +11,21 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { deployer } = await getNamedAccounts();
   const accounts = await ethers.getSigners();
 
-  const args: any[] = [];
-
   const primaryClassContracts = Object.keys(PrimaryClass).filter(
     (key) => isNaN(Number(key)) && key !== "None"
   );
   const secondaryClassContracts = Object.keys(SecondaryClass).filter(
     (key) => isNaN(Number(key)) && key !== "None"
   );
+  const player = await deployments.get("Player");
+  const stats = await deployments.get("StatsLibrary");
 
   log(
     `\n----------------------- Deploying PrimaryClass spells  -----------------------\n`
   );
 
   let nonce = await accounts[0].getTransactionCount();
+  const primaryArgs: any[] = [player.address];
 
   await Promise.all(
     primaryClassContracts.map(async (contract, i) => {
@@ -32,8 +33,11 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
       const deployment = await deploy(`${contract}Spells`, {
         from: deployer,
-        args,
+        args: primaryArgs,
         nonce: nonce + i,
+        libraries: {
+          StatsLibrary: stats.address,
+        },
         waitConfirmations: developmentChains.includes(network.name) ? 1 : 5,
       });
 
@@ -43,7 +47,7 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
         !developmentChains.includes(network.name) &&
         process.env.ETHERSCAN_API_KEY
       ) {
-        await verify(deployment.address, args);
+        await verify(deployment.address, primaryArgs);
       }
 
       return deployment;
@@ -55,6 +59,7 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   );
 
   nonce = await accounts[0].getTransactionCount();
+  const secondaryArgs: any[] = [];
 
   await Promise.all(
     secondaryClassContracts.map(async (contract, i) => {
@@ -62,7 +67,7 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
       const deployment = await deploy(`${contract}Spells`, {
         from: deployer,
-        args,
+        args: secondaryArgs,
         nonce: nonce + i,
         waitConfirmations: developmentChains.includes(network.name) ? 1 : 5,
       });
@@ -73,7 +78,7 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
         !developmentChains.includes(network.name) &&
         process.env.ETHERSCAN_API_KEY
       ) {
-        await verify(deployment.address, args);
+        await verify(deployment.address, secondaryArgs);
       }
 
       return deployment;
