@@ -2,6 +2,7 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import "@nomiclabs/hardhat-ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Framework } from "@superfluid-finance/sdk-core";
+import { parseEther } from "ethers/lib/utils";
 import { deployments, ethers } from "hardhat";
 import { snapshot } from "../deploy/10-init-world";
 
@@ -13,6 +14,7 @@ import {
   World,
   World__factory,
 } from "../types";
+import { PrimaryClass } from "../utils/player-utils";
 
 describe("Spells", () => {
   let provider: JsonRpcProvider,
@@ -39,11 +41,21 @@ describe("Spells", () => {
     spell = Spell__factory.connect(spellDeployment.address, accounts[0]);
   });
 
+  beforeEach(async () => {
+    const balance = await player.balanceOf(accounts[0].address);
+
+    if (balance.eq(0)) {
+      await player.create(PrimaryClass.Enchanter, { value: parseEther("1") });
+    }
+  });
+
   afterEach(async () => {
     await snapshot.loadSnapshot();
   });
 
   describe("Casting spells", () => {
-    it("should create a flow between ManaReserve, and World", async () => {});
+    it.only("should be able to cast a spell", async () => {
+      await spell.cast(0, 0, [0], 1);
+    });
   });
 });

@@ -16,7 +16,7 @@ contract EnchanterSpells is ICastable {
 
     function spell0(uint256 caster, uint256[] memory targets) internal {
         string memory name = getName();
-        console.log(string.concat(name, "spell0"));
+        console.log(string.concat(name, "-spell0"));
     }
 
     // ** SPELLS **

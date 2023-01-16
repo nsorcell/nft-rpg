@@ -10,6 +10,7 @@ import {ERC721Linked} from "../tokens/ERC721Linked.sol";
 import {SpellRegistry} from "./SpellRegistry.sol";
 import {UintArrayUtils, AddressArrayUtils, StringArrayUtils} from "../libraries/ArrayUtils.sol";
 import "../libraries/Errors.sol";
+import {console} from "hardhat/console.sol";
 
 contract Spell is ERC721Linked {
     using AddressArrayUtils for address[];
