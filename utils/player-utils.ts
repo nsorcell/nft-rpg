@@ -92,6 +92,7 @@ export const createStatsArray = (from: StatsInput) => [
 
 export const createAttributesArray = (from: AttributesInput) => [
   from.level,
+  from.health,
   from.experience,
   from.primaryClass,
   from.secondaryClass,

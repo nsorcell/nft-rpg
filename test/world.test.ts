@@ -7,7 +7,7 @@ import { Framework, SuperToken__factory } from "@superfluid-finance/sdk-core";
 import { expect } from "chai";
 import { parseEther } from "ethers/lib/utils";
 import { deployments, ethers } from "hardhat";
-import { snapshot } from "../deploy/07-init-world";
+import { snapshot } from "../deploy/10-init-world";
 
 import {
   Currency,
@@ -17,6 +17,7 @@ import {
   World,
   World__factory,
 } from "../types";
+import { PrimaryClass } from "../utils/player-utils";
 
 describe("World", () => {
   let provider: JsonRpcProvider,
@@ -53,7 +54,7 @@ describe("World", () => {
     const balance = await player.balanceOf(accounts[0].address);
 
     if (balance.eq(0)) {
-      await player.create({ value: parseEther("1") });
+      await player.create(PrimaryClass.Enchanter, { value: parseEther("1") });
     }
   });
 

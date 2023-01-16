@@ -8,7 +8,7 @@ import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils";
 import { deployments, ethers } from "hardhat";
-import { snapshot } from "../deploy/07-init-world";
+import { snapshot } from "../deploy/10-init-world";
 
 import {
   ManaReserve,
@@ -18,6 +18,7 @@ import {
   World,
   World__factory,
 } from "../types";
+import { PrimaryClass } from "../utils/player-utils";
 
 describe("Mana", () => {
   let provider: JsonRpcProvider,
@@ -86,7 +87,7 @@ describe("Mana", () => {
 
       await mine(100);
 
-      player.create({ value: parseEther("1") });
+      player.create(PrimaryClass.Guardian, { value: parseEther("1") });
 
       flow = await framework.cfaV1.getFlow({
         sender: reserve.address,

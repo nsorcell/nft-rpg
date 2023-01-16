@@ -17,8 +17,21 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   log(`Deploying ${CONTRACT} and waiting for confirmations...`);
 
-  const manaReserve = await deployments.get("ManaReserve");
+  const provider = new ethers.providers.JsonRpcProvider(
+    "http://localhost:8545",
+    5
+  );
 
+  // const world = await deployments.get("World");
+  const manaReserve = await deployments.get("ManaReserve");
+  // const worldSigner = await ethers.getImpersonatedSigner(world.address);
+
+  // const tx = {
+  //   to: world.address,
+  //   value: ethers.utils.parseEther("100"),
+  // };
+
+  // await provider.send(tx, []);
   const args: any[] = [];
   const manaDeployment = await deploy(CONTRACT, {
     from: deployer,

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.16;
-import {ICastable} from "../interfaces/ICastable.sol";
+import {ICastable} from "../../interfaces/ICastable.sol";
 
-contract WarriorSpells is ICastable {
+contract DreamweaverSpells is ICastable {
     mapping(uint256 => function(uint256, uint256[] memory)) private s_spells;
     string[] private s_spellsList;
 
@@ -26,7 +26,7 @@ contract WarriorSpells is ICastable {
     }
 
     function getName() public pure override returns (string memory) {
-        return "Warrior";
+        return "Dreamweaver";
     }
 
     function getSpells() public view override returns (string[] memory) {

@@ -5,7 +5,7 @@ import { Framework } from "@superfluid-finance/sdk-core";
 import { expect } from "chai";
 import { parseEther } from "ethers/lib/utils";
 import { deployments, ethers } from "hardhat";
-import { snapshot } from "../deploy/07-init-world";
+import { snapshot } from "../deploy/10-init-world";
 
 import {
   Currency,
@@ -15,6 +15,7 @@ import {
   World,
   World__factory,
 } from "../types";
+import { PrimaryClass } from "../utils/player-utils";
 
 describe("Currency", () => {
   let provider: JsonRpcProvider,
@@ -49,10 +50,12 @@ describe("Currency", () => {
     const balance2 = await player.balanceOf(accounts[1].address);
 
     if (balance1.eq(0)) {
-      await player.create({ value: parseEther("1") });
+      await player.create(PrimaryClass.Warrior, { value: parseEther("1") });
     }
     if (balance2.eq(0)) {
-      await player.connect(accounts[1]).create({ value: parseEther("1") });
+      await player
+        .connect(accounts[1])
+        .create(PrimaryClass.Guardian, { value: parseEther("1") });
     }
   });
 

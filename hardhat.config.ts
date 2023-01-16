@@ -25,13 +25,12 @@ const config: HardhatUserConfig = {
   networks: {
     localhost: {
       url: "http://127.0.0.1:8545",
-      allowUnlimitedContractSize: true,
+      allowUnlimitedContractSize: false,
     },
     hardhat: {
       chainId: 5,
       forking: {
         url: `${GOERLI_RPC_URL}`,
-        blockNumber: 8293564,
       },
     },
     mumbai: {

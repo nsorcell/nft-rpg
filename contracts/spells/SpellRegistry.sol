@@ -20,15 +20,15 @@ contract SpellRegistry {
     string[] private s_spellClassNames;
 
     constructor(
-        address[1] memory primaryClassContracts,
-        address[1] memory secondaryClassContracts
+        address[5] memory primaryClassContracts,
+        address[14] memory secondaryClassContracts
     ) {
         unchecked {
-            for (uint256 i = 0; i < 1; i++) {
+            for (uint256 i = 0; i < 5; i++) {
                 s_primaryClassContracts[i] = primaryClassContracts[i];
             }
 
-            for (uint256 i = 0; i < 1; i++) {
+            for (uint256 i = 0; i < 14; i++) {
                 s_secondaryClassContracts[i] = secondaryClassContracts[i];
             }
         }
@@ -76,10 +76,6 @@ contract SpellRegistry {
     function getPrimaryClassContract(
         ClassLibrary.PrimaryClass primaryClass
     ) external view returns (ICastable) {
-        if (primaryClass == ClassLibrary.PrimaryClass.None) {
-            return ICastable(address(0));
-        }
-
         return ICastable(s_primaryClassContracts[uint256(primaryClass)]);
     }
 

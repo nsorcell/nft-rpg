@@ -4,9 +4,10 @@ import "@nomiclabs/hardhat-ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Framework } from "@superfluid-finance/sdk-core";
 import { expect } from "chai";
+import { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils";
 import { deployments, ethers } from "hardhat";
-import { snapshot } from "../deploy/07-init-world";
+import { snapshot } from "../deploy/10-init-world";
 import {
   Currency,
   Currency__factory,
@@ -15,6 +16,7 @@ import {
   World,
   World__factory,
 } from "../types";
+import { PrimaryClass } from "../utils/player-utils";
 
 describe("Player", () => {
   let provider: JsonRpcProvider,
@@ -48,10 +50,9 @@ describe("Player", () => {
     const balance = await player.balanceOf(accounts[0].address);
 
     if (balance.eq(0)) {
-      await expect(player.create({ value: parseEther("1") })).to.emit(
-        player,
-        "Player_PlayerCreated"
-      );
+      await expect(
+        player.create(PrimaryClass.Warrior, { value: parseEther("1") })
+      ).to.emit(player, "Player_PlayerCreated");
     }
   });
 
@@ -61,7 +62,10 @@ describe("Player", () => {
 
   describe("Player basic functionality", () => {
     it("should be able to create one player", async () => {
-      expect(await player.getPlayerOf(accounts[0].address)).to.equal(0);
+      expect(await player.getPlayerOf(accounts[0].address)).to.be.eql([
+        true,
+        BigNumber.from("0"),
+      ]);
       expect(await player.ownerOf(0)).to.equal(accounts[0].address);
     });
   });

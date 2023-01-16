@@ -9,8 +9,7 @@ library ClassLibrary {
         Mage,
         Rogue,
         Guardian,
-        Enchanter,
-        None
+        Enchanter
     }
 
     enum SecondaryClass {
@@ -69,10 +68,6 @@ library ClassLibrary {
         PrimaryClass primary,
         SecondaryClass secondary
     ) public pure returns (StatsLibrary.Stats[2] memory) {
-        if (primary == PrimaryClass.None) {
-            return [StatsLibrary.Stats.VOID, StatsLibrary.Stats.VOID];
-        }
-
         StatsLibrary.Stats[5] memory primaryMarkers;
         primaryMarkers[uint256(PrimaryClass.Warrior)] = StatsLibrary
             .Stats

@@ -21,8 +21,7 @@ contract Player is IPlayer, ERC721 {
     using SafeMath for uint256;
 
     uint256 private constant MAX_DISTRIBUTABLE_POINTS = 3;
-    uint256 private constant FIRST_CLASS_REQUIRED_LEVEL = 5;
-    uint256 private constant SECOND_CLASS_REQIRED_LEVEL = 10;
+    uint256 private constant CLASS_TRANSFER_REQIRED_LEVEL = 10;
     uint256 private constant INITIAL_STAT_VALUE = 6;
 
     World private immutable i_world;
@@ -59,7 +58,7 @@ contract Player is IPlayer, ERC721 {
         i_price = price;
     }
 
-    function create() external payable {
+    function create(ClassLibrary.PrimaryClass primaryClass) external payable {
         if (balanceOf(msg.sender) > 0) {
             revert Player_MultiplePlayersNotAllowed();
         }
@@ -85,7 +84,7 @@ contract Player is IPlayer, ERC721 {
             stats,
             StatsLibrary.calculateHealth(stats),
             0,
-            ClassLibrary.PrimaryClass.None,
+            primaryClass,
             ClassLibrary.SecondaryClass.None,
             location,
             true
@@ -175,35 +174,11 @@ contract Player is IPlayer, ERC721 {
         s_travel[player] = travelData;
     }
 
-    function firstClassTransfer(
-        uint256 player,
-        ClassLibrary.PrimaryClass selected
-    ) external onlyOwnerOf(player) {
-        if (
-            s_attributes[player].primaryClass != ClassLibrary.PrimaryClass.None
-        ) {
-            revert Player_NotEligibleForClassTransfer();
-        }
-
-        if (s_attributes[player].level < FIRST_CLASS_REQUIRED_LEVEL) {
-            revert Player_NotEligibleForClassTransfer();
-        }
-
-        s_attributes[player].primaryClass = selected;
-        emit Player_FirstClassTransfer(player, uint256(selected));
-    }
-
-    function secondClassTransfer(
+    function classTransfer(
         uint256 player,
         ClassLibrary.SecondaryClass selected
     ) external onlyOwnerOf(player) {
-        if (
-            s_attributes[player].primaryClass == ClassLibrary.PrimaryClass.None
-        ) {
-            revert Player_NotEligibleForClassTransfer();
-        }
-
-        if (s_attributes[player].level < SECOND_CLASS_REQIRED_LEVEL) {
+        if (s_attributes[player].level < CLASS_TRANSFER_REQIRED_LEVEL) {
             revert Player_NotEligibleForClassTransfer();
         }
 

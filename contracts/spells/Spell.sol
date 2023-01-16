@@ -14,6 +14,7 @@ import "../libraries/Errors.sol";
 contract Spell is ERC721Linked {
     using AddressArrayUtils for address[];
     using StringArrayUtils for string[];
+    using UintArrayUtils for uint256[];
 
     enum SpellType {
         MINTABLE,
@@ -22,7 +23,6 @@ contract Spell is ERC721Linked {
     }
 
     using Counters for Counters.Counter;
-    using UintArrayUtils for uint256[];
 
     struct SpellBook {
         string name;
