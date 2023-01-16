@@ -48,10 +48,15 @@ contract Spell is ERC721Linked {
 
     function cast(
         uint256 spell,
-        uint256 caster,
         uint256[] memory targets,
         SpellType spellType
     ) external {
+        (bool hasPlayer, uint caster) = i_player.getPlayerOf(msg.sender);
+
+        if (!hasPlayer) {
+            revert Unauthorized();
+        }
+
         StatsLibrary.Attributes memory attributes = i_player.getAttributes(
             caster
         );
