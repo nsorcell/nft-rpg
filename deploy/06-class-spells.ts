@@ -59,7 +59,7 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   );
 
   nonce = await accounts[0].getTransactionCount();
-  const secondaryArgs: any[] = [];
+  const secondaryArgs: any[] = [player.address];
 
   await Promise.all(
     secondaryClassContracts.map(async (contract, i) => {

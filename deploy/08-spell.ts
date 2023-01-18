@@ -18,9 +18,10 @@ const deploy: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const statsLibrary = await deployments.get("StatsLibrary");
 
   const player = await deployments.get("Player");
+  const world = await deployments.get("World");
   const spellRegistry = await deployments.get("SpellRegistry");
 
-  const args: any[] = [player.address, spellRegistry.address];
+  const args: any[] = [player.address, world.address, spellRegistry.address];
 
   log(`Deploying ${CONTRACT} and waiting for confirmations...`);
 
