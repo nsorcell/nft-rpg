@@ -1,5 +1,6 @@
 import { BigNumber, ethers } from "ethers";
 import Decimal from "decimal.js";
+import { createNoise2D } from "./simplex-noise";
 
 type uint8 = number;
 type int16 = number;
@@ -12,7 +13,6 @@ type int128 = number;
 type uint256 = BigInt;
 
 const vecsDenom: int16 = 1000;
-const perlinMax: uint16 = 64;
 
 // returns a random unit vector
 // implicit denominator of vecsDenom
@@ -135,32 +135,78 @@ export function getSingleScalePerlin(
   return result;
 }
 
+const simplex = createNoise2D()
+
+let useSimplex = true
+
 export function computePerlin(
   x: uint32,
   y: uint32,
   scale: uint32,
-  seed: uint32
+  seed: uint32,
+  /**
+   * The number of levels of detail you want you perlin noise to have
+   */
+  octaves: int32 = 1,
+  /**
+   * Number that determines how much detail is added or removed at each octave
+   */
+  lacunarity: int16 = 1,
+  /**
+   * Number that determines how much each octave contributes to the overall shape
+   */
+  persistance = 0.25,
+  /**
+   * The exponential factor to closen up or widen the generated noise values from the center
+   */
+  smoothness = 1
 ): number {
   let perlin = new Decimal(0);
 
-  const rounds = 5
+  // For computing the average of the octaves
+  let maxAmplitude = 0
+  for (let i = 0; i < octaves; i++) {
+    const frequency = (lacunarity ** i)
+    const amplitude = (persistance ** i)
 
-  for (let i = 0; i < rounds; i++) {
-    perlin = perlin.add(getSingleScalePerlin(x, y, scale * (2 ** i), seed));
+    maxAmplitude += amplitude
+
+    const cx = x * frequency
+    const cy = y * frequency
+    const cscale = scale // (scale * 2 ** i)
+
+    let noise
+
+    if (useSimplex) {
+      noise = new Decimal(simplex(cx, cy)).mul(amplitude)
+    } else {
+      noise = getSingleScalePerlin(cx, cy, scale, seed).mul(amplitude)
+    }
+
+    const l = lerp(0, 10, y)
+
+    console.log(l)
+
+    if (y > 0 && perlin.toNumber() > 0) {
+      noise = noise.mul(1 + l / 10)
+    } else {
+
+    }
+
+    perlin = perlin.add(noise);
   }
 
-  perlin = perlin.add(getSingleScalePerlin(x, y, scale * scale, seed).mul(2));
+  const weight = 0
 
-  // perlin = perlin.minus(0.5).mul(2).abs().inverseSine();
+  // perlin = perlin.add(getSingleScalePerlin(x * scale, y * scale, scale *  scale, seed).mul(weight))
 
-  // Take the average
-  perlin = perlin.div(rounds + 1).mul(50).add(50);
+  perlin = perlin.div(maxAmplitude + weight).add(1).pow(smoothness)
+
+  perlin = perlin.mul(50)
 
   return perlin.floor().toNumber();
+}
 
-  const perlinMaxHalf = perlinMax / 2
-
-  const perlinScaledShifted = (perlin.mul(perlinMaxHalf)).add(perlinMaxHalf)
-
-  return perlinScaledShifted.floor().toNumber();
+function lerp (start: number, end: number, amt: number){
+  return ((1-amt)*start+amt*end)/ 10
 }
