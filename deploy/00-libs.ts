@@ -73,6 +73,26 @@ const deploy: DeployFunction = async ({ getNamedAccounts, deployments }) => {
       ABDKMath64x64: abdk.address
     }
   });
+
+  // const mulberry = await deploy("Mulberry", {
+  //   from: deployer,
+  //   log: true,
+  //   args: [],
+  //   libraries: {
+  //     ABDKMath64x64: abdk.address
+  //   }
+  // });
+
+  // const simplex = await deploy("Simplex", {
+  //   from: deployer,
+  //   log: true,
+  //   args: [0],
+  //   libraries: {
+  //     Mulberry: mulberry.address,
+  //     ABDKMath64x64: abdk.address
+  //   },
+  //   gasLimit: 30000000-1
+  // });
 };
 
 deploy.tags = ["all", "libs"];

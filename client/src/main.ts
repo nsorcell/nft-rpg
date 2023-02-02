@@ -40,19 +40,19 @@ const options: PerlinOptions = {
   startY: 0,
   zoom: 1,
   chunkSizeX: 100,
-  chunkSizeY:  150,
+  chunkSizeY:  100,
   octaves: 3,
   lacunarity: 7,
-  persistance: 0.125,
+  persistance: 0.0625,
   smoothness: 1
 }
 
 const renderOptions = {
-  size: 5,
+  size: 8,
   seaLevel: 36
 }
 
-gui.add(options, "zoom", 1, 200, 0.5).onFinishChange(recomputeEverything);
+gui.add(options, "zoom", 1, 5, 0.5).onChange( () => {recomputeEverything()});
 gui.add(options, "scale", 2, 64, 2).onFinishChange(recomputeEverything);
 gui.add(options, "seed", 1, 100, 1).onFinishChange(recomputeEverything);
 gui.add(options, "startX", 0, 500, 10).onFinishChange(recomputeEverything);
@@ -62,17 +62,17 @@ gui.add(options, 'chunkSizeY', 100, 500, 10).onFinishChange(recomputeEverything)
 
 gui.add(options, 'octaves', 1, 10, 1).onFinishChange(recomputeEverything);
 gui.add(options, 'lacunarity', 0, 10, 0.5).onFinishChange(recomputeEverything);
-gui.add(options, 'persistance', 0, 1, 0.125 / 2).onFinishChange(recomputeEverything);
+gui.add(options, 'persistance', 0, 1, 0.125 / 4).onFinishChange(recomputeEverything);
 gui.add(options, 'smoothness', 0, 2, 0.1).onFinishChange(recomputeEverything);
 
 gui.add(renderOptions, 'size', 1, 100, 1).onChange(render);
 gui.add(renderOptions, 'seaLevel', 1, 100, 1).onChange(render);
 
-const { chunkSizeX, chunkSizeY } = options
+const { chunkSizeX, chunkSizeY, zoom } = options
 
 const worker = new MyWorker()
 
-async function computeHeight(): Promise<number[][]> {
+async function computeHeight(zoom?: number): Promise<number[][]> {
   // const result = await db.get(getChunkId(options.startX, options.startY))
 
   // if (result) {
@@ -86,7 +86,7 @@ async function computeHeight(): Promise<number[][]> {
     })
 
     // const octaves = zoom > 8 ? 1 : zoom > 5 ? 2 : zoom > 3 ? 3 : 5;
-    worker.postMessage(options);
+    worker.postMessage({ ...options, zoom: zoom || options.zoom, /*chunkSizeX: chunkSizeX + 30, chunkSizeY: chunkSizeY + 30,*/  });
   }))
 }
 
@@ -95,6 +95,14 @@ let matrix: number[][]
 
 async function recomputeEverything() {
   matrix = await computeHeight()
+  computeHeight(1.5)
+  computeHeight(2)
+  computeHeight(2.5)
+  computeHeight(3)
+  computeHeight(3.5)
+  computeHeight(4)
+  computeHeight(4.5)
+  computeHeight(5)
   render()
 }
 
@@ -111,11 +119,11 @@ function render() {
     for (let k = 0; k < chunkSizeY; k++) {
       const height = matrix[i][k]
 
-      const scale = chroma.scale(['blue', '#38bdf8', '#fde047', '#84cc16', '#AA8753', '#57534e', 'white'])
+      // const scale = chroma.scale(['blue', '#38bdf8', '#fde047', '#84cc16', '#AA8753', '#57534e', 'white'])
 
-      const sc = (height - 10) / 90
+      // const sc = (height - 10) / 90
 
-      let color = scale(sc).num()
+      let color = biome(height).num()
 
       if (height === -1) {
         color = chroma('red').num()
@@ -134,26 +142,47 @@ app.stage.addChild(graphics);
 
 recomputeEverything()
 
+function biome(e: number) {
+  if (e < 0.45) {
+    return chroma.scale(['blue', '#38bdf8'])(e / 0.45)
+  }
+  else if (e < 0.5) {
+    return chroma.scale(['#38bdf8','#fde047', '#84cc16'])((e - 0.45) / 0.05)
+  }
+  else {
+    return chroma.scale(['#84cc16','#84cc16', '#84cc16', '#AA8753', '#57534e', 'white'])((e - 0.5) / 0.5)
+  }
+}
+
 
 document.onkeydown = checkKey;
 
-function checkKey(e) {
+function checkKey(e: KeyboardEvent) {
   e = e || window.event;
   if (e.keyCode == '38') {
     // up arrow
-    options.startY -= 10
+    options.startY -= (10 / zoom)
   }
   else if (e.keyCode == '40') {
     // down arrow
-    options.startY += 10
+    options.startY += (10 / zoom)
   }
   else if (e.keyCode == '37') {
     // left arrow
-    options.startX -= 10
+    options.startX -= (10 / zoom)
   }
   else if (e.keyCode == '39') {
     // right arrow
-    options.startX += 10
+    options.startX += (10 / zoom)
   }
   recomputeEverything()
 }
+
+// function drawHexagon(x: number, y: number) {
+//   ctx.beginPath();
+//   for (var i = 0; i < 6; i++) {
+//     ctx.lineTo(x + r * Math.cos(a * i), y + r * Math.sin(a * i));
+//   }
+//   ctx.closePath();
+//   ctx.stroke();
+// }

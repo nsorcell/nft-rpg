@@ -135,7 +135,10 @@ export function getSingleScalePerlin(
   return result;
 }
 
-const simplex = createNoise2D()
+/**
+ * Returns a number between 0-1
+ */
+const noiseFn = (nx: number, ny: number, seed = 1) => createNoise2D(mulberry32(seed))(nx, ny) / 2 + 0.5
 
 let useSimplex = true
 
@@ -144,6 +147,7 @@ export function computePerlin(
   y: uint32,
   scale: uint32,
   seed: uint32,
+  zoom: number,
   /**
    * The number of levels of detail you want you perlin noise to have
    */
@@ -161,10 +165,19 @@ export function computePerlin(
    */
   smoothness = 1
 ): number {
-  let perlin = new Decimal(0);
+  let map = ((noiseFn(x / 55, y / 55, 143) - 0.5) * 1.2) + 0.5
+
+  const weight = 10
+
+  const base = Math.min(0.9, Math.max(0.1, map)) * weight
+
+  let perlin = new Decimal(base);
+
+  // return perlin.toNumber()
 
   // For computing the average of the octaves
   let maxAmplitude = 0
+
   for (let i = 0; i < octaves; i++) {
     const frequency = (lacunarity ** i)
     const amplitude = (persistance ** i)
@@ -173,40 +186,48 @@ export function computePerlin(
 
     const cx = x * frequency
     const cy = y * frequency
-    const cscale = scale // (scale * 2 ** i)
 
     let noise
 
     if (useSimplex) {
-      noise = new Decimal(simplex(cx, cy)).mul(amplitude)
+      noise = new Decimal(noiseFn(cx / 3, cy / 3)).mul(amplitude)
     } else {
       noise = getSingleScalePerlin(cx, cy, scale, seed).mul(amplitude)
     }
 
-    const l = lerp(0, 10, y)
+    // const l = lerp(0, 10, y)
 
-    console.log(l)
+    // if (y > 0 && perlin.toNumber() > 0) {
+    //   noise = noise.mul(1 + l / 10)
+    // } else {
 
-    if (y > 0 && perlin.toNumber() > 0) {
-      noise = noise.mul(1 + l / 10)
-    } else {
-
-    }
+    // }
 
     perlin = perlin.add(noise);
   }
 
-  const weight = 0
-
   // perlin = perlin.add(getSingleScalePerlin(x * scale, y * scale, scale *  scale, seed).mul(weight))
 
-  perlin = perlin.div(maxAmplitude + weight).add(1).pow(smoothness)
+  // if ((perlin.toNumber() > 0 && map > 0)) {
+  //   perlin = perlin.add(map * 2).div(3)
+  // } else if (map > 0) {
+  //   perlin = perlin.add(map * 1).div(2)
+  // }
 
-  perlin = perlin.mul(50)
+  perlin = perlin.div(maxAmplitude + weight).pow(smoothness)
 
-  return perlin.floor().toNumber();
+  return perlin.toNumber();
 }
 
-function lerp (start: number, end: number, amt: number){
-  return ((1-amt)*start+amt*end)/ 10
+function lerp(start: number, end: number, amt: number) {
+  return ((1 - amt) * start + amt * end) / 10
+}
+
+function mulberry32(a: number) {
+  return function () {
+    var t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
 }

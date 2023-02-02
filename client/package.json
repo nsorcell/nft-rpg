@@ -18,6 +18,7 @@
     "@pixi/webworker": "^7.1.0",
     "chroma-js": "^2.4.2",
     "dexie": "^3.2.2",
+    "ethers": "^5.7.2",
     "gun": "^0.2020.1239",
     "ipfs": "^0.66.0",
     "multiformats": "9.9.0",

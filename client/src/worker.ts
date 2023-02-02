@@ -42,18 +42,19 @@ addEventListener('message', async (ev) => {
           const offsetx = startX - chunkSizeX / 2
           const offsety = startY - chunkSizeY / 2
 
-          const cx = i + offsetx
-          const cy = k + offsety
+          const cx = (i + offsetx) / zoom
+          const cy = (k + offsety) / zoom
 
           let noise = computePerlin(
-            cx / zoom,
-            cy / zoom,
+            cx,
+            cy,
             scale,
             seed,
+            zoom,
             octaves,
             lacunarity,
             persistance,
-            smoothness
+            smoothness,
           )
 
           result[i][k] = noise
